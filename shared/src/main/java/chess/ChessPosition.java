@@ -13,8 +13,14 @@ public class ChessPosition {
 
     public ChessPosition(int row, int col) {
         this.row = row;
-        this.col = row;
+        this.col = col;
     }
+
+    @Override
+    public String toString() {
+        return "(" + row + ", " + col + ")";
+    }
+
 
     /**
      * @return which row this position is in
