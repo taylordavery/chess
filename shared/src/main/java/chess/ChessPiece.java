@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Represents a single chess piece
@@ -11,7 +12,12 @@ import java.util.Collection;
  */
 public class ChessPiece {
 
+    private final ChessGame.TeamColor TeamColor;
+    private final ChessPiece.PieceType PieceType;
+
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+        this.PieceType = type;
+        this.TeamColor = pieceColor;
     }
 
     /**
@@ -30,14 +36,14 @@ public class ChessPiece {
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
-        throw new RuntimeException("Not implemented");
+        return this.TeamColor;
     }
 
     /**
      * @return which type of chess piece this piece is
      */
     public PieceType getPieceType() {
-        throw new RuntimeException("Not implemented");
+        return this.PieceType;
     }
 
     /**
@@ -48,6 +54,36 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        return new ArrayList<>();
+        var moves = new ArrayList<ChessMove>();
+
+        var i = myPosition;
+        while (i.getRow() > 0 && i.getRow() < 9 && i.getColumn() > 0 && i.getColumn() < 9) {
+            i = new ChessPosition(i.getRow() + 1, i.getColumn() - 1);
+            var j = new ChessMove(myPosition, i, this.getPieceType());
+            moves.add(j);
+        }
+
+        i = myPosition;
+        while (i.getRow() > 0 && i.getRow() < 9 && i.getColumn() > 0 && i.getColumn() < 9) {
+            i = new ChessPosition(i.getRow() - 1, i.getColumn() - 1);
+            var j = new ChessMove(myPosition, i, this.getPieceType());
+            moves.add(j);
+        }
+
+        i = myPosition;
+        while (i.getRow() > 0 && i.getRow() < 9 && i.getColumn() > 0 && i.getColumn() < 9) {
+            i = new ChessPosition(i.getRow() + 1, i.getColumn() + 1);
+            var j = new ChessMove(myPosition, i, this.getPieceType());
+            moves.add(j);
+        }
+
+        i = myPosition;
+        while (i.getRow() > 0 && i.getRow() < 9 && i.getColumn() > 0 && i.getColumn() < 9) {
+            i = new ChessPosition(i.getRow() - 1, i.getColumn() + 1);
+            var j = new ChessMove(myPosition, i, this.getPieceType());
+            moves.add(j);
+        }
+
+        return moves;
     }
 }
