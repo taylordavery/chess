@@ -30,7 +30,10 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        return squares[position.getRow()][position.getColumn()];
+        if (position.getRow() < 8 && position.getColumn() < 8 && position.getRow() > 0 && position.getColumn() > 0) {
+            return squares[position.getRow()][position.getColumn()];
+        }
+        return null;
     }
 
     /**
