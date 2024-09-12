@@ -32,6 +32,13 @@ public class ChessMove {
         return startPosition.equals(that.startPosition) && endPosition.equals(that.endPosition);
     }
 
+    @Override
+    public int hashCode() {
+        int result = startPosition.hashCode();
+        result = 31 * result + endPosition.hashCode();
+        return result;
+    }
+
     /**
      * @return ChessPosition of starting location
      */
