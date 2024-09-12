@@ -24,6 +24,14 @@ public class ChessMove {
         return startPosition + " -> " + endPosition;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessMove that = (ChessMove) o;
+        return startPosition.equals(that.startPosition) && endPosition.equals(that.endPosition);
+    }
+
     /**
      * @return ChessPosition of starting location
      */
