@@ -55,160 +55,33 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         var moves = new ArrayList<ChessMove>();
+        var i = myPosition;
+        int[][] tuples = null;
 
         if (this.PieceType == PieceType.BISHOP) {
-            var i = myPosition;
-            while (i.getRow() > 1 && i.getRow() < 8 && i.getColumn() > 1 && i.getColumn() < 8) {
-                i = new ChessPosition(i.getRow() + 1, i.getColumn() - 1);
-                var j = new ChessMove(myPosition, i, this.getPieceType());
-                if (board.getPiece(i) != null) {
-                    if (board.getPiece(i).getTeamColor() != this.getTeamColor() && board.getPiece(i).getPieceType() != PieceType.KING) {
-                        moves.add(j);
-                    }
-                    break;
-                }
-                moves.add(j);
-            }
-
-            i = myPosition;
-            while (i.getRow() > 1 && i.getRow() < 8 && i.getColumn() > 1 && i.getColumn() < 8) {
-                i = new ChessPosition(i.getRow() - 1, i.getColumn() - 1);
-                var j = new ChessMove(myPosition, i, this.getPieceType());
-                if (board.getPiece(i) != null) {
-                    if (board.getPiece(i).getTeamColor() != this.getTeamColor() && board.getPiece(i).getPieceType() != PieceType.KING) {
-                        moves.add(j);
-                    }
-                    break;
-                }
-                moves.add(j);
-            }
-
-            i = myPosition;
-            while (i.getRow() > 1 && i.getRow() < 8 && i.getColumn() > 1 && i.getColumn() < 8) {
-                i = new ChessPosition(i.getRow() + 1, i.getColumn() + 1);
-                var j = new ChessMove(myPosition, i, this.getPieceType());
-                if (board.getPiece(i) != null) {
-                    if (board.getPiece(i).getTeamColor() != this.getTeamColor() && board.getPiece(i).getPieceType() != PieceType.KING) {
-                        moves.add(j);
-                    }
-                    break;
-                }
-                moves.add(j);
-            }
-
-            i = myPosition;
-            while (i.getRow() > 1 && i.getRow() < 8 && i.getColumn() > 1 && i.getColumn() < 8) {
-                i = new ChessPosition(i.getRow() - 1, i.getColumn() + 1);
-                var j = new ChessMove(myPosition, i, this.getPieceType());
-                if (board.getPiece(i) != null) {
-                    if (board.getPiece(i).getTeamColor() != this.getTeamColor() && board.getPiece(i).getPieceType() != PieceType.KING) {
-                        moves.add(j);
-                    }
-                    break;
-                }
-                moves.add(j);
-            }
+            tuples = new int[][] {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
         }
 
-        if (this.PieceType == PieceType.KING) {
-            var i = myPosition;
-            if (i.getRow() > 1 && i.getRow() < 8 && i.getColumn() > 1 && i.getColumn() < 8) {
-                i = new ChessPosition(i.getRow() + 1, i.getColumn() - 1);
-                var j = new ChessMove(myPosition, i, this.getPieceType());
-                if (board.getPiece(i) != null) {
-                    if (board.getPiece(i).getTeamColor() != this.getTeamColor() && board.getPiece(i).getPieceType() != PieceType.KING) {
-                        moves.add(j);
-                    }
-                }
-                moves.add(j);
-            }
-
-            i = myPosition;
-            if (i.getRow() > 1 && i.getRow() < 8 && i.getColumn() > 1 && i.getColumn() < 8) {
-                i = new ChessPosition(i.getRow() - 1, i.getColumn() - 1);
-                var j = new ChessMove(myPosition, i, this.getPieceType());
-                if (board.getPiece(i) != null) {
-                    if (board.getPiece(i).getTeamColor() != this.getTeamColor() && board.getPiece(i).getPieceType() != PieceType.KING) {
-                        moves.add(j);
-                    }
-                }
-                moves.add(j);
-            }
-
-            i = myPosition;
-            if (i.getRow() > 1 && i.getRow() < 8 && i.getColumn() > 1 && i.getColumn() < 8) {
-                i = new ChessPosition(i.getRow() + 1, i.getColumn() + 1);
-                var j = new ChessMove(myPosition, i, this.getPieceType());
-                if (board.getPiece(i) != null) {
-                    if (board.getPiece(i).getTeamColor() != this.getTeamColor() && board.getPiece(i).getPieceType() != PieceType.KING) {
-                        moves.add(j);
-                    }
-                }
-                moves.add(j);
-            }
-
-            i = myPosition;
-            if (i.getRow() > 1 && i.getRow() < 8 && i.getColumn() > 1 && i.getColumn() < 8) {
-                i = new ChessPosition(i.getRow() - 1, i.getColumn() + 1);
-                var j = new ChessMove(myPosition, i, this.getPieceType());
-                if (board.getPiece(i) != null) {
-                    if (board.getPiece(i).getTeamColor() != this.getTeamColor() && board.getPiece(i).getPieceType() != PieceType.KING) {
-                        moves.add(j);
-                    }
-                }
-                moves.add(j);
-            }
-
-            i = myPosition;
-            if (i.getRow() > 1 && i.getRow() < 8 && i.getColumn() > 1 && i.getColumn() < 8) {
-                i = new ChessPosition(i.getRow(), i.getColumn() - 1);
-                var j = new ChessMove(myPosition, i, this.getPieceType());
-                if (board.getPiece(i) != null) {
-                    if (board.getPiece(i).getTeamColor() != this.getTeamColor() && board.getPiece(i).getPieceType() != PieceType.KING) {
-                        moves.add(j);
-                    }
-                }
-                moves.add(j);
-            }
-
-            i = myPosition;
-            if (i.getRow() > 1 && i.getRow() < 8 && i.getColumn() > 1 && i.getColumn() < 8) {
-                i = new ChessPosition(i.getRow() - 1, i.getColumn());
-                var j = new ChessMove(myPosition, i, this.getPieceType());
-                if (board.getPiece(i) != null) {
-                    if (board.getPiece(i).getTeamColor() != this.getTeamColor() && board.getPiece(i).getPieceType() != PieceType.KING) {
-                        moves.add(j);
-                    }
-                }
-                moves.add(j);
-            }
-
-            i = myPosition;
-            if (i.getRow() > 1 && i.getRow() < 8 && i.getColumn() > 1 && i.getColumn() < 8) {
-                i = new ChessPosition(i.getRow(), i.getColumn() + 1);
-                var j = new ChessMove(myPosition, i, this.getPieceType());
-                if (board.getPiece(i) != null) {
-                    if (board.getPiece(i).getTeamColor() != this.getTeamColor() && board.getPiece(i).getPieceType() != PieceType.KING) {
-                        moves.add(j);
-                    }
-                }
-                moves.add(j);
-            }
-
-            i = myPosition;
-            if (i.getRow() > 1 && i.getRow() < 8 && i.getColumn() > 1 && i.getColumn() < 8) {
-                i = new ChessPosition(i.getRow() - 1, i.getColumn());
-                var j = new ChessMove(myPosition, i, this.getPieceType());
-                if (board.getPiece(i) != null) {
-                    if (board.getPiece(i).getTeamColor() != this.getTeamColor() && board.getPiece(i).getPieceType() != PieceType.KING) {
-                        moves.add(j);
-                    }
-                }
-                moves.add(j);
-            }
+        if (this.PieceType == PieceType.QUEEN) {
+            tuples = new int[][] {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}, {1, 0}, {-1, 0}, {0, 1}, {0, -1}};
         }
 
+        if (tuples != null) {
+            for (int[] tuple : tuples) {
+                i = myPosition;
+                while (i.getRow() > 1 && i.getRow() < 8 && i.getColumn() > 1 && i.getColumn() < 8) {
+                    i = new ChessPosition(i.getRow() + tuple[0], i.getColumn() + tuple[1]);
+                    var j = new ChessMove(myPosition, i, this.getPieceType());
+                    if (board.getPiece(i) != null) {
+                        if (board.getPiece(i).getTeamColor() != this.getTeamColor() && board.getPiece(i).getPieceType() != PieceType.KING) {
+                            moves.add(j);
+                        }
+                        break;
+                    }
+                    moves.add(j);
+                }
+            }
+        }
         return moves;
     }
-
 }
