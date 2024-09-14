@@ -62,7 +62,7 @@ public class ChessPiece {
             tuples = new int[][] {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
         }
 
-        if (this.PieceType == PieceType.QUEEN) {
+        if (this.PieceType == PieceType.QUEEN || this.PieceType == PieceType.KING) {
             tuples = new int[][] {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}, {1, 0}, {-1, 0}, {0, 1}, {0, -1}};
         }
 
@@ -91,6 +91,8 @@ public class ChessPiece {
                         }
                         break;
                     } else moves.add(j);
+
+                    if (this.PieceType == PieceType.KING) break;
                 }
             }
         }
