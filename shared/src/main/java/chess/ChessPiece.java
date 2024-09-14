@@ -104,8 +104,27 @@ public class ChessPiece {
             }
         }
 
-        if (this.PieceType == PieceType.PAWN) {}
+        if (this.PieceType == PieceType.PAWN) {
+            int direction;
+            if (this.TeamColor == ChessGame.TeamColor.BLACK) {
+                direction = -1;
+            } else {
+                direction = 1;
+            }
 
+            // Move forward one space
+            ChessPosition i = new ChessPosition(myPosition.getRow() + direction, myPosition.getColumn());
+            if (board.getPiece(i) == null && i.getRow() != 8 && i.getRow() != 1) {
+                moves.add(new ChessMove(myPosition, i, this.getPieceType()));
+                i = new ChessPosition(i.getRow() + direction, i.getColumn());
+                if (board.getPiece(i) == null && ((i.getRow() == 4 && this.getTeamColor() == ChessGame.TeamColor.WHITE) || (i.getRow() == 5 && this.getTeamColor() == ChessGame.TeamColor.BLACK))) {
+                    moves.add(new ChessMove(myPosition, i, this.getPieceType()));
+                }
+            } else if (board.getPiece(i) == null && (i.getRow() == 8 || i.getRow() == 1)) {
+                moves.add(new ChessMove(myPosition, i, PieceType.QUEEN));
+            }
+
+        }
         return moves;
     }
 }
