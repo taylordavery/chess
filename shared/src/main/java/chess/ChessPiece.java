@@ -124,6 +124,24 @@ public class ChessPiece {
                 moves.add(new ChessMove(myPosition, i, PieceType.QUEEN));
             }
 
+            i = new ChessPosition(myPosition.getRow() + direction, myPosition.getColumn() - 1);
+            if (board.getPiece(i) != null && board.getPiece(i).getTeamColor() != this.getTeamColor()) {
+                if (i.getRow() == 1 || i.getRow() == 8) {
+                    moves.add(new ChessMove(myPosition, i, PieceType.QUEEN));
+                } else {
+                    moves.add(new ChessMove(myPosition, i, this.getPieceType()));
+                }
+            }
+
+            i = new ChessPosition(myPosition.getRow() + direction, myPosition.getColumn() + 1);
+            if (board.getPiece(i) != null && board.getPiece(i).getTeamColor() != this.getTeamColor()) {
+                if (i.getRow() == 1 || i.getRow() == 8) {
+                    moves.add(new ChessMove(myPosition, i, PieceType.QUEEN));
+                } else {
+                    moves.add(new ChessMove(myPosition, i, this.getPieceType()));
+                }
+            }
+
         }
         return moves;
     }
