@@ -66,19 +66,31 @@ public class ChessPiece {
             tuples = new int[][] {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}, {1, 0}, {-1, 0}, {0, 1}, {0, -1}};
         }
 
+        if (this.PieceType == PieceType.ROOK) {
+            tuples = new int[][] {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+        }
+
         if (tuples != null) {
             for (int[] tuple : tuples) {
                 i = myPosition;
-                while (i.getRow() > 1 && i.getRow() < 8 && i.getColumn() > 1 && i.getColumn() < 8) {
+                ChessMove j;
+                while (i.getRow() > 0 && i.getRow() < 9 && i.getColumn() > 0 && i.getColumn() < 9) {
                     i = new ChessPosition(i.getRow() + tuple[0], i.getColumn() + tuple[1]);
-                    var j = new ChessMove(myPosition, i, this.getPieceType());
-                    if (board.getPiece(i) != null) {
-                        if (board.getPiece(i).getTeamColor() != this.getTeamColor() && board.getPiece(i).getPieceType() != PieceType.KING) {
+
+                    if (i.getRow() < 1 || i.getRow() > 8 || i.getColumn() < 1 || i.getColumn() > 8) {
+                        break;
+                    }
+
+                    j = new ChessMove(myPosition, i, this.getPieceType());
+
+                    ChessPiece targetPiece = board.getPiece(i);
+
+                    if (targetPiece != null) {
+                        if (targetPiece.getTeamColor() != this.getTeamColor() && targetPiece.getPieceType() != PieceType.KING) {
                             moves.add(j);
                         }
                         break;
-                    }
-                    moves.add(j);
+                    } else moves.add(j);
                 }
             }
         }
