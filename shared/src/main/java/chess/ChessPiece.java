@@ -110,7 +110,7 @@ public class ChessPiece {
                             break;
                         }
 
-                        j = new ChessMove(myPosition, i, this.getPieceType());
+                        j = new ChessMove(myPosition, i, null);
 
                         ChessPiece targetPiece = board.getPiece(i);
 
@@ -138,21 +138,27 @@ public class ChessPiece {
             // Move forward one space
             ChessPosition i = new ChessPosition(myPosition.getRow() + direction, myPosition.getColumn());
             if (board.getPiece(i) == null && i.getRow() != 8 && i.getRow() != 1) {
-                moves.add(new ChessMove(myPosition, i, this.getPieceType()));
+                moves.add(new ChessMove(myPosition, i, null));
                 i = new ChessPosition(i.getRow() + direction, i.getColumn());
                 if (board.getPiece(i) == null && ((i.getRow() == 4 && this.getTeamColor() == ChessGame.TeamColor.WHITE) || (i.getRow() == 5 && this.getTeamColor() == ChessGame.TeamColor.BLACK))) {
-                    moves.add(new ChessMove(myPosition, i, this.getPieceType()));
+                    moves.add(new ChessMove(myPosition, i, null));
                 }
             } else if (board.getPiece(i) == null && (i.getRow() == 8 || i.getRow() == 1)) {
                 moves.add(new ChessMove(myPosition, i, PieceType.QUEEN));
+                moves.add(new ChessMove(myPosition, i, PieceType.ROOK));
+                moves.add(new ChessMove(myPosition, i, PieceType.BISHOP));
+                moves.add(new ChessMove(myPosition, i, PieceType.KNIGHT));
             }
 
             i = new ChessPosition(myPosition.getRow() + direction, myPosition.getColumn() - 1);
             if (board.getPiece(i) != null && board.getPiece(i).getTeamColor() != this.getTeamColor()) {
                 if (i.getRow() == 1 || i.getRow() == 8) {
                     moves.add(new ChessMove(myPosition, i, PieceType.QUEEN));
+                    moves.add(new ChessMove(myPosition, i, PieceType.ROOK));
+                    moves.add(new ChessMove(myPosition, i, PieceType.BISHOP));
+                    moves.add(new ChessMove(myPosition, i, PieceType.KNIGHT));
                 } else {
-                    moves.add(new ChessMove(myPosition, i, this.getPieceType()));
+                    moves.add(new ChessMove(myPosition, i, null));
                 }
             }
 
@@ -160,8 +166,11 @@ public class ChessPiece {
             if (board.getPiece(i) != null && board.getPiece(i).getTeamColor() != this.getTeamColor()) {
                 if (i.getRow() == 1 || i.getRow() == 8) {
                     moves.add(new ChessMove(myPosition, i, PieceType.QUEEN));
+                    moves.add(new ChessMove(myPosition, i, PieceType.ROOK));
+                    moves.add(new ChessMove(myPosition, i, PieceType.BISHOP));
+                    moves.add(new ChessMove(myPosition, i, PieceType.KNIGHT));
                 } else {
-                    moves.add(new ChessMove(myPosition, i, this.getPieceType()));
+                    moves.add(new ChessMove(myPosition, i, null));
                 }
             }
 
