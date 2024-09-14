@@ -20,6 +20,29 @@ public class ChessPiece {
         this.TeamColor = pieceColor;
     }
 
+    @Override
+    public String toString() {
+        if (this.PieceType != null) {
+            return this.TeamColor.toString() + " " + this.PieceType.toString();
+        }
+        return null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessPiece that = (ChessPiece) o;
+        return this.TeamColor.equals(that.TeamColor) && this.PieceType.equals(that.PieceType);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = this.TeamColor.hashCode();
+        result = 31 * result + this.PieceType.hashCode();
+        return result;
+    }
+
     /**
      * The various different chess piece options
      */
