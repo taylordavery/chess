@@ -77,52 +77,48 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        var moves = new ArrayList<ChessMove>();
+        Collection<ChessMove> moves = new ArrayList<>();
 
         if (this.PieceType == PieceType.KING || this.PieceType == PieceType.QUEEN || this.PieceType == PieceType.BISHOP || this.PieceType == PieceType.ROOK || this.PieceType == PieceType.KNIGHT) {
             var i = myPosition;
-            int[][] tuples = null;
 
-            if (this.PieceType == PieceType.BISHOP) {
-                tuples = new int[][]{{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
+            int[][] tuples;
+
+            switch (this.PieceType) {
+                case BISHOP ->
+                        tuples = new int[][]{{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
+                case QUEEN, KING ->
+                        tuples = new int[][]{{1, 1}, {1, -1}, {-1, 1}, {-1, -1}, {1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+                case ROOK ->
+                        tuples = new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+                case KNIGHT ->
+                        tuples = new int[][]{{1, 2}, {1, -2}, {-1, 2}, {-1, -2}, {2, 1}, {2, -1}, {-2, 1}, {-2, -1}};
+                default ->
+                        throw new IllegalArgumentException("Unknown piece type: " + this.PieceType);
             }
 
-            if (this.PieceType == PieceType.QUEEN || this.PieceType == PieceType.KING) {
-                tuples = new int[][]{{1, 1}, {1, -1}, {-1, 1}, {-1, -1}, {1, 0}, {-1, 0}, {0, 1}, {0, -1}};
-            }
+            for (int[] tuple : tuples) {
+                i = myPosition;
+                ChessMove j;
+                while (i.getRow() > 0 && i.getRow() < 9 && i.getColumn() > 0 && i.getColumn() < 9) {
+                    i = new ChessPosition(i.getRow() + tuple[0], i.getColumn() + tuple[1]);
 
-            if (this.PieceType == PieceType.ROOK) {
-                tuples = new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
-            }
-
-            if (this.PieceType == PieceType.KNIGHT) {
-                tuples = new int[][]{{1, 2}, {1, -2}, {-1, 2}, {-1, -2}, {2, 1}, {2, -1}, {-2, 1}, {-2, -1}};
-            }
-
-            if (tuples != null) {
-                for (int[] tuple : tuples) {
-                    i = myPosition;
-                    ChessMove j;
-                    while (i.getRow() > 0 && i.getRow() < 9 && i.getColumn() > 0 && i.getColumn() < 9) {
-                        i = new ChessPosition(i.getRow() + tuple[0], i.getColumn() + tuple[1]);
-
-                        if (i.getRow() < 1 || i.getRow() > 8 || i.getColumn() < 1 || i.getColumn() > 8) {
-                            break;
-                        }
-
-                        j = new ChessMove(myPosition, i, null);
-
-                        ChessPiece targetPiece = board.getPiece(i);
-
-                        if (targetPiece != null) {
-                            if (targetPiece.getTeamColor() != this.getTeamColor() && targetPiece.getPieceType() != PieceType.KING) {
-                                moves.add(j);
-                            }
-                            break;
-                        } else moves.add(j);
-
-                        if (this.PieceType == PieceType.KING || this.PieceType == PieceType.KNIGHT) break;
+                    if (i.getRow() < 1 || i.getRow() > 8 || i.getColumn() < 1 || i.getColumn() > 8) {
+                        break;
                     }
+
+                    j = new ChessMove(myPosition, i, null);
+
+                    ChessPiece targetPiece = board.getPiece(i);
+
+                    if (targetPiece != null) {
+                        if (targetPiece.getTeamColor() != this.getTeamColor() && targetPiece.getPieceType() != PieceType.KING) {
+                            moves.add(j);
+                        }
+                        break;
+                    } else moves.add(j);
+
+                    if (this.PieceType == PieceType.KING || this.PieceType == PieceType.KNIGHT) break;
                 }
             }
         }
