@@ -256,4 +256,4 @@ public class ChessGame {
     public ChessBoard getBoard() {
         return this.board;
     }
-}
+}//
