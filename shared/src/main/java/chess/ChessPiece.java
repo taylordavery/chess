@@ -14,10 +14,12 @@ public class ChessPiece {
 
     private final ChessGame.TeamColor TeamColor;
     private final ChessPiece.PieceType PieceType;
+    private boolean justDoubleMoved;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.PieceType = type;
         this.TeamColor = pieceColor;
+        this.justDoubleMoved = false;
     }
 
     @Override
@@ -67,6 +69,14 @@ public class ChessPiece {
      */
     public PieceType getPieceType() {
         return this.PieceType;
+    }
+
+    public boolean getJustDoubleMoved() {
+        return this.justDoubleMoved;
+    }
+
+    public void setJustDoubleMoved(boolean setting) {
+        this.justDoubleMoved = setting;
     }
 
     /**

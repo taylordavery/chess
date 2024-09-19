@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -15,6 +16,7 @@ public class ChessGame {
 
     public ChessGame() {
         this.board = new ChessBoard();
+        this.board.resetBoard();
         this.TeamTurn = ChessGame.TeamColor.WHITE;
     }
 
@@ -51,7 +53,26 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         if (this.board.getPiece(startPosition) == null) {return null;}
-        return this.board.getPiece(startPosition).pieceMoves(this.board, startPosition);
+
+        ArrayList<ChessMove> validMoves = new ArrayList<>();
+
+        ChessPiece from_piece = this.board.getPiece(startPosition);
+        ChessPiece to_piece = null;
+
+        for (ChessMove move : this.board.getPiece(startPosition).pieceMoves(this.board, startPosition)) {
+            to_piece = this.board.squares[(move.getEndPosition()).getRow()-1][(move.getEndPosition()).getColumn()-1];
+            this.board.squares[move.getStartPosition().getRow()-1][move.getStartPosition().getColumn()-1] = null;
+            this.board.squares[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1] = from_piece;
+            if (isInCheck(from_piece.getTeamColor())) {
+                this.board.squares[move.getStartPosition().getRow()-1][move.getStartPosition().getColumn()-1] = from_piece;
+                this.board.squares[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1] = to_piece;
+            } else {
+                validMoves.add(move);
+                this.board.squares[move.getStartPosition().getRow()-1][move.getStartPosition().getColumn()-1] = from_piece;
+                this.board.squares[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1] = to_piece;
+            }
+        }
+        return validMoves;
     }
 
     /**
@@ -61,26 +82,39 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+
         ChessPiece from_piece = this.board.getPiece(move.getStartPosition());
-        ChessPiece to_piece = this.board.getPiece(move.getEndPosition());
+        ChessPiece to_piece = this.board.squares[(move.getEndPosition()).getRow()-1][(move.getEndPosition()).getColumn()-1];
 
         if (from_piece == null) {
             throw new InvalidMoveException("No piece in starting position");
+        }
+
+        if (from_piece.getTeamColor() != this.getTeamTurn()) {
+            throw new InvalidMoveException("Not your turn");
         }
 
          for (ChessMove validMove : this.validMoves(move.getStartPosition())) {
              if (move.equals(validMove)) {
                  this.board.squares[move.getStartPosition().getRow()-1][move.getStartPosition().getColumn()-1] = null;
                  this.board.squares[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1] = from_piece;
-                 if (isInCheck(from_piece.getTeamColor())) {
-                     this.board.squares[move.getStartPosition().getRow()-1][move.getStartPosition().getColumn()-1] = from_piece;
-                     this.board.squares[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1] = to_piece;
-                     throw new InvalidMoveException("Can't be in check after your move");
-                 } else {
-                     if (move.getPromotionPiece() != null) {
-                         this.board.squares[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1] = new ChessPiece(from_piece.getTeamColor(), move.getPromotionPiece());
+
+                 if (move.getPromotionPiece() != null) {
+                     this.board.squares[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1] = new ChessPiece(from_piece.getTeamColor(), move.getPromotionPiece());
+                 }
+
+                 if (this.getTeamTurn() == ChessGame.TeamColor.WHITE) {
+                     this.setTeamTurn(ChessGame.TeamColor.BLACK);
+                 } else if (this.getTeamTurn() == ChessGame.TeamColor.BLACK) {
+                     this.setTeamTurn(ChessGame.TeamColor.WHITE);
+                 }
+
+                 if (this.board.squares[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1].getPieceType() == ChessPiece.PieceType.PAWN) {
+                     if (move.getStartPosition().getRow() - move.getEndPosition().getRow() > 1 || move.getStartPosition().getRow() - move.getEndPosition().getRow() < -1) {
+                         this.board.squares[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1].setJustDoubleMoved(true);
                      }
                  }
+
                  return;
              }
          }
@@ -153,7 +187,7 @@ public class ChessGame {
                 }
             }
         }
-        return true;
+        return this.isInCheck(teamColor);
     }
 
     /**
@@ -164,7 +198,22 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        int rowNum = 0;
+        int colNum;
+
+        for (ChessPiece[] row : this.board.squares) {
+            rowNum = rowNum + 1;
+            colNum = 0;
+            for (ChessPiece piece : row) {
+                colNum = colNum + 1;
+                if (piece != null && piece.getTeamColor().equals(teamColor)) {
+                    for (ChessMove move : this.validMoves(new ChessPosition(rowNum, colNum))) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return !this.isInCheck(teamColor);
     }
 
     /**
