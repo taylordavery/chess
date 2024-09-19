@@ -180,6 +180,25 @@ public class ChessPiece {
                 }
             }
 
+            // en passant
+            i = new ChessPosition(myPosition.getRow() + direction, myPosition.getColumn() - 1);
+            ChessPiece passingEnemyPiece = board.getPiece(new ChessPosition(myPosition.getRow(), myPosition.getColumn() - 1));
+            if (passingEnemyPiece != null && passingEnemyPiece.getJustDoubleMoved() && passingEnemyPiece.getTeamColor() != this.getTeamColor()) {
+                ChessMove enPassantMove = new ChessMove(myPosition, i, null);
+                enPassantMove.setIsEnPassantMove(true);
+                moves.add(enPassantMove);
+            }
+
+            i = new ChessPosition(myPosition.getRow() + direction, myPosition.getColumn() + 1);
+            passingEnemyPiece = board.getPiece(new ChessPosition(myPosition.getRow(), myPosition.getColumn() + 1));
+            if (passingEnemyPiece != null && passingEnemyPiece.getJustDoubleMoved() && passingEnemyPiece.getTeamColor() != this.getTeamColor()) {
+                ChessMove enPassantMove = new ChessMove(myPosition, i, null);
+                enPassantMove.setIsEnPassantMove(true);
+                moves.add(enPassantMove);
+            }
+
+
+
         }
         return moves;
     }

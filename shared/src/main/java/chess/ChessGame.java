@@ -82,13 +82,28 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-
         ChessPiece from_piece = this.board.getPiece(move.getStartPosition());
         ChessPiece to_piece = this.board.squares[(move.getEndPosition()).getRow()-1][(move.getEndPosition()).getColumn()-1];
 
         if (from_piece == null) {
             throw new InvalidMoveException("No piece in starting position");
         }
+
+
+        int rowNum = 0;
+        int colNum;
+
+        for (ChessPiece[] row : this.board.squares) {
+            rowNum = rowNum + 1;
+            colNum = 0;
+            for (ChessPiece piece : row) {
+                colNum = colNum + 1;
+                if (piece != null && piece.getTeamColor().equals(from_piece.getTeamColor())) {
+                    piece.setJustDoubleMoved(false);
+                }
+            }
+        }
+
 
         if (from_piece.getTeamColor() != this.getTeamTurn()) {
             throw new InvalidMoveException("Not your turn");
@@ -98,6 +113,10 @@ public class ChessGame {
              if (move.equals(validMove)) {
                  this.board.squares[move.getStartPosition().getRow()-1][move.getStartPosition().getColumn()-1] = null;
                  this.board.squares[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1] = from_piece;
+
+                 if (validMove.getIsEnPassantMove()) {
+                     this.board.squares[move.getStartPosition().getRow()-1][move.getEndPosition().getColumn()-1] = null;
+                 }
 
                  if (move.getPromotionPiece() != null) {
                      this.board.squares[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1] = new ChessPiece(from_piece.getTeamColor(), move.getPromotionPiece());

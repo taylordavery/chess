@@ -13,12 +13,22 @@ public class ChessMove {
     private final ChessPosition startPosition;
     private final ChessPosition endPosition;
     private final ChessPiece.PieceType promotionPiece;
+    private boolean isEnPassantMove;
 
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
                      ChessPiece.PieceType promotionPiece) {
         this.startPosition = startPosition;
         this.endPosition = endPosition;
         this.promotionPiece = promotionPiece;
+        this.isEnPassantMove = false;
+    }
+
+    public boolean getIsEnPassantMove() {
+        return this.isEnPassantMove;
+    }
+
+    public void setIsEnPassantMove(boolean setting) {
+        this.isEnPassantMove = setting;
     }
 
     @Override
