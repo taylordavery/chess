@@ -112,7 +112,7 @@ public class ChessPiece {
                     ChessPiece targetPiece = board.getPiece(i);
 
                     if (targetPiece != null) {
-                        if (targetPiece.getTeamColor() != this.getTeamColor() && targetPiece.getPieceType() != PieceType.KING) {
+                        if (targetPiece.getTeamColor() != this.getTeamColor()) {
                             moves.add(j);
                         }
                         break;

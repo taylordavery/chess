@@ -50,6 +50,7 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
+        if (this.board.getPiece(startPosition) == null) {return null;}
         return this.board.getPiece(startPosition).pieceMoves(this.board, startPosition);
     }
 
@@ -60,20 +61,31 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        ChessPiece piece = this.board.getPiece(move.getStartPosition());
+        ChessPiece from_piece = this.board.getPiece(move.getStartPosition());
+        ChessPiece to_piece = this.board.getPiece(move.getEndPosition());
 
-        if (piece == null) {
+        if (from_piece == null) {
             throw new InvalidMoveException("No piece in starting position");
         }
 
-         for (ChessMove validMove : validMoves(move.getStartPosition())) {
+         for (ChessMove validMove : this.validMoves(move.getStartPosition())) {
              if (move.equals(validMove)) {
-                 this.board.squares[move.getStartPosition().getRow()][move.getStartPosition().getColumn()] = null;
-                 this.board.squares[move.getStartPosition().getRow()][move.getStartPosition().getColumn()] = piece;
-             } else {
-                 throw new InvalidMoveException("Not a valid move");
+                 this.board.squares[move.getStartPosition().getRow()-1][move.getStartPosition().getColumn()-1] = null;
+                 this.board.squares[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1] = from_piece;
+                 if (isInCheck(from_piece.getTeamColor())) {
+                     this.board.squares[move.getStartPosition().getRow()-1][move.getStartPosition().getColumn()-1] = from_piece;
+                     this.board.squares[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1] = to_piece;
+                     throw new InvalidMoveException("Can't be in check after your move");
+                 } else {
+                     if (move.getPromotionPiece() != null) {
+                         this.board.squares[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1] = new ChessPiece(from_piece.getTeamColor(), move.getPromotionPiece());
+                     }
+                 }
+                 return;
              }
          }
+
+         throw new InvalidMoveException("Not a valid move");
 
     }
 
@@ -85,14 +97,15 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         int rowNum = 0;
-        int colNum = 0;
+        int colNum;
         ChessPosition kingPosition = null;
 
         for (ChessPiece[] row : this.board.squares) {
             rowNum = rowNum + 1;
+            colNum = 0;
             for (ChessPiece piece : row) {
                 colNum = colNum + 1;
-                if (piece.getTeamColor().equals(teamColor)) {
+                if (piece != null && piece.getTeamColor().equals(teamColor)) {
                     if (piece.getPieceType() == ChessPiece.PieceType.KING) {
                         kingPosition = new ChessPosition(rowNum, colNum);
                     }
@@ -101,12 +114,12 @@ public class ChessGame {
         }
 
         rowNum = 0;
-        colNum = 0;
         for (ChessPiece[] row : this.board.squares) {
             rowNum = rowNum + 1;
+            colNum = 0;
             for (ChessPiece piece : row) {
                 colNum = colNum + 1;
-                if (!piece.getTeamColor().equals(teamColor)) {
+                if (piece != null && !piece.getTeamColor().equals(teamColor)) {
                     for (ChessMove move : piece.pieceMoves(this.board, new ChessPosition(rowNum, colNum))) {
                         if (move.getEndPosition().equals(kingPosition)) {
                             return true;
