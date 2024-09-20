@@ -14,12 +14,14 @@ public class ChessPiece {
 
     private final ChessGame.TeamColor TeamColor;
     private final ChessPiece.PieceType PieceType;
+    private boolean hasMoved;
     private boolean justDoubleMoved;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.PieceType = type;
         this.TeamColor = pieceColor;
         this.justDoubleMoved = false;
+        this.hasMoved = false;
     }
 
     @Override
@@ -79,6 +81,14 @@ public class ChessPiece {
         this.justDoubleMoved = setting;
     }
 
+    public boolean getHasMoved() {
+        return this.hasMoved;
+    }
+
+    public void setHasMoved(boolean setting) {
+        this.hasMoved = setting;
+    }
+
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
@@ -129,6 +139,37 @@ public class ChessPiece {
                     } else moves.add(j);
 
                     if (this.PieceType == PieceType.KING || this.PieceType == PieceType.KNIGHT) break;
+                }
+            }
+        }
+
+        if (this.PieceType == PieceType.KING && !this.hasMoved) {
+            // Castle Left
+            if (board.getPiece(new ChessPosition(board.getPosition(this).getRow(), board.getPosition(this).getColumn()-1)) == null) {
+                if (board.getPiece(new ChessPosition(board.getPosition(this).getRow(), board.getPosition(this).getColumn()-2)) == null) {
+                    if (board.getPiece(new ChessPosition(board.getPosition(this).getRow(), board.getPosition(this).getColumn()-3)) == null) {
+                        if (board.getPiece(new ChessPosition(board.getPosition(this).getRow(), board.getPosition(this).getColumn()-4)) != null) {
+                            if (!board.getPiece(new ChessPosition(board.getPosition(this).getRow(), board.getPosition(this).getColumn()-4)).getHasMoved()) {
+                                ChessMove castleMove = new ChessMove(board.getPosition(this), new ChessPosition(board.getPosition(this).getRow(), board.getPosition(this).getColumn()-2), null);
+                                castleMove.setIsCastleMove(true);
+                                moves.add(castleMove);
+                            }
+                        }
+                    }
+                }
+            }
+
+
+            // Castle Right
+            if (board.getPiece(new ChessPosition(board.getPosition(this).getRow(), board.getPosition(this).getColumn()+1)) == null) {
+                if (board.getPiece(new ChessPosition(board.getPosition(this).getRow(), board.getPosition(this).getColumn()+2)) == null) {
+                    if (board.getPiece(new ChessPosition(board.getPosition(this).getRow(), board.getPosition(this).getColumn()+3)) != null) {
+                        if (!board.getPiece(new ChessPosition(board.getPosition(this).getRow(), board.getPosition(this).getColumn()+3)).getHasMoved()) {
+                            ChessMove castleMove = new ChessMove(board.getPosition(this), new ChessPosition(board.getPosition(this).getRow(), board.getPosition(this).getColumn()+2), null);
+                            castleMove.setIsCastleMove(true);
+                            moves.add(castleMove);
+                        }
+                    }
                 }
             }
         }

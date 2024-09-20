@@ -119,4 +119,21 @@ public class ChessBoard {
         squares[6][7] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
 
     }
+
+    public ChessPosition getPosition(ChessPiece targetPiece) {
+        int rowNum = 0;
+        int colNum;
+
+        for (ChessPiece[] row : this.squares) {
+            rowNum = rowNum + 1;
+            colNum = 0;
+            for (ChessPiece piece : row) {
+                colNum = colNum + 1;
+                if (piece == targetPiece) {
+                    return new ChessPosition(rowNum, colNum);
+                }
+            }
+        }
+        return null;
+    }
 }

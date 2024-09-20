@@ -60,16 +60,65 @@ public class ChessGame {
         ChessPiece to_piece = null;
 
         for (ChessMove move : this.board.getPiece(startPosition).pieceMoves(this.board, startPosition)) {
-            to_piece = this.board.squares[(move.getEndPosition()).getRow()-1][(move.getEndPosition()).getColumn()-1];
-            this.board.squares[move.getStartPosition().getRow()-1][move.getStartPosition().getColumn()-1] = null;
-            this.board.squares[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1] = from_piece;
-            if (isInCheck(from_piece.getTeamColor())) {
-                this.board.squares[move.getStartPosition().getRow()-1][move.getStartPosition().getColumn()-1] = from_piece;
-                this.board.squares[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1] = to_piece;
+
+            if (move.getIsCastleMove()) {
+                if (!isInCheck(from_piece.getTeamColor())) {
+                    // left castle
+                    if (move.getEndPosition().getColumn() < move.getStartPosition().getColumn()) {
+                        to_piece = this.board.squares[(move.getStartPosition()).getRow()-1][(move.getStartPosition().getColumn()-2)];
+                        this.board.squares[move.getStartPosition().getRow()-1][move.getStartPosition().getColumn()-1] = null;
+                        this.board.squares[move.getStartPosition().getRow()-1][move.getStartPosition().getColumn()-2] = from_piece;
+                        if (isInCheck(from_piece.getTeamColor())) {
+                            this.board.squares[move.getStartPosition().getRow() - 1][move.getStartPosition().getColumn() - 1] = from_piece;
+                            this.board.squares[(move.getStartPosition()).getRow()-1][(move.getStartPosition().getColumn()-2)] = to_piece;
+                        } else {
+                            to_piece = this.board.squares[(move.getStartPosition()).getRow()-1][(move.getStartPosition().getColumn()-3)];
+                            this.board.squares[move.getStartPosition().getRow()-1][move.getStartPosition().getColumn()-2] = null;
+                            this.board.squares[move.getStartPosition().getRow()-1][move.getStartPosition().getColumn()-3] = from_piece;
+                            if (isInCheck(from_piece.getTeamColor())) {
+                                this.board.squares[move.getStartPosition().getRow() - 1][move.getStartPosition().getColumn() - 1] = from_piece;
+                                this.board.squares[(move.getStartPosition()).getRow() - 1][(move.getStartPosition().getColumn() - 3)] = to_piece;
+                            } else {
+                                validMoves.add(move);
+                                this.board.squares[move.getStartPosition().getRow() - 1][move.getStartPosition().getColumn() - 1] = from_piece;
+                                this.board.squares[(move.getStartPosition()).getRow() - 1][(move.getStartPosition().getColumn() - 3)] = to_piece;
+                            }
+                        }
+                    }
+
+                    // right castle
+                    if (move.getEndPosition().getColumn() > move.getStartPosition().getColumn()) {
+                        to_piece = this.board.squares[(move.getStartPosition()).getRow()-1][(move.getStartPosition().getColumn())];
+                        this.board.squares[move.getStartPosition().getRow()-1][move.getStartPosition().getColumn()-1] = null;
+                        this.board.squares[move.getStartPosition().getRow()-1][move.getStartPosition().getColumn()] = from_piece;
+                        if (isInCheck(from_piece.getTeamColor())) {
+                            this.board.squares[move.getStartPosition().getRow() - 1][move.getStartPosition().getColumn() - 1] = from_piece;
+                            this.board.squares[(move.getStartPosition()).getRow()-1][(move.getStartPosition().getColumn())] = to_piece;
+                        } else {
+                            to_piece = this.board.squares[(move.getStartPosition()).getRow()-1][(move.getStartPosition().getColumn()+1)];
+                            this.board.squares[move.getStartPosition().getRow()-1][move.getStartPosition().getColumn()] = null;
+                            this.board.squares[move.getStartPosition().getRow()-1][move.getStartPosition().getColumn()+1] = from_piece;
+                            if (!isInCheck(from_piece.getTeamColor())) {
+                                validMoves.add(move);
+                            }
+                            this.board.squares[move.getStartPosition().getRow() - 1][move.getStartPosition().getColumn() - 1] = from_piece;
+                            this.board.squares[(move.getStartPosition()).getRow() - 1][(move.getStartPosition().getColumn() + 1)] = to_piece;
+                        }
+                    }
+                }
             } else {
-                validMoves.add(move);
-                this.board.squares[move.getStartPosition().getRow()-1][move.getStartPosition().getColumn()-1] = from_piece;
-                this.board.squares[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1] = to_piece;
+                to_piece = this.board.squares[(move.getEndPosition()).getRow() - 1][(move.getEndPosition()).getColumn() - 1];
+                this.board.squares[move.getStartPosition().getRow() - 1][move.getStartPosition().getColumn() - 1] = null;
+                this.board.squares[move.getEndPosition().getRow() - 1][move.getEndPosition().getColumn() - 1] = from_piece;
+
+                if (isInCheck(from_piece.getTeamColor())) {
+                    this.board.squares[move.getStartPosition().getRow() - 1][move.getStartPosition().getColumn() - 1] = from_piece;
+                    this.board.squares[move.getEndPosition().getRow() - 1][move.getEndPosition().getColumn() - 1] = to_piece;
+                } else {
+                    validMoves.add(move);
+                    this.board.squares[move.getStartPosition().getRow() - 1][move.getStartPosition().getColumn() - 1] = from_piece;
+                    this.board.squares[move.getEndPosition().getRow() - 1][move.getEndPosition().getColumn() - 1] = to_piece;
+                }
             }
         }
         return validMoves;
@@ -113,6 +162,24 @@ public class ChessGame {
              if (move.equals(validMove)) {
                  this.board.squares[move.getStartPosition().getRow()-1][move.getStartPosition().getColumn()-1] = null;
                  this.board.squares[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1] = from_piece;
+
+                 this.board.squares[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1].setHasMoved(true);
+
+                 if (validMove.getIsCastleMove()) {
+                     // left castle
+                     if (validMove.getEndPosition().getColumn() < validMove.getStartPosition().getColumn()) {
+                         ChessPiece rook = this.board.squares[validMove.getStartPosition().getRow()-1][0];
+                         this.board.squares[validMove.getStartPosition().getRow()-1][0] = null;
+                         this.board.squares[validMove.getEndPosition().getRow()-1][3] = rook;
+                     }
+
+                     // right castle
+                     if (validMove.getEndPosition().getColumn() > validMove.getStartPosition().getColumn()) {
+                         ChessPiece rook = this.board.squares[validMove.getStartPosition().getRow()-1][7];
+                         this.board.squares[validMove.getStartPosition().getRow()-1][7] = null;
+                         this.board.squares[validMove.getEndPosition().getRow()-1][5] = rook;
+                     }
+                 }
 
                  if (validMove.getIsEnPassantMove()) {
                      this.board.squares[move.getStartPosition().getRow()-1][move.getEndPosition().getColumn()-1] = null;

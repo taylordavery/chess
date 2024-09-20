@@ -13,6 +13,7 @@ public class ChessMove {
     private final ChessPosition startPosition;
     private final ChessPosition endPosition;
     private final ChessPiece.PieceType promotionPiece;
+    private boolean isCastleMove;
     private boolean isEnPassantMove;
 
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
@@ -21,6 +22,7 @@ public class ChessMove {
         this.endPosition = endPosition;
         this.promotionPiece = promotionPiece;
         this.isEnPassantMove = false;
+        this.isCastleMove = false;
     }
 
     public boolean getIsEnPassantMove() {
@@ -29,6 +31,14 @@ public class ChessMove {
 
     public void setIsEnPassantMove(boolean setting) {
         this.isEnPassantMove = setting;
+    }
+
+    public boolean getIsCastleMove() {
+        return this.isCastleMove;
+    }
+
+    public void setIsCastleMove(boolean setting) {
+        this.isCastleMove = setting;
     }
 
     @Override
