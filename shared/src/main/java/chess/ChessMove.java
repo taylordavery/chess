@@ -54,8 +54,7 @@ public class ChessMove {
         if (startPosition.equals(that.startPosition) && endPosition.equals(that.endPosition)) {
             if (promotionPiece == null && that.promotionPiece == null) return true;
             if (promotionPiece == null) return false;
-            if (!promotionPiece.equals(that.promotionPiece)) return false;
-            else return true;
+            return promotionPiece.equals(that.promotionPiece);
         }
         return false;
     }

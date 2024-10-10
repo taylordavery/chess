@@ -54,9 +54,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        if (position.getRow() < 9 && position.getColumn() < 9 && position.getRow() > 0 && position.getColumn() > 0) {
-            squares[position.getRow()-1][position.getColumn()-1] = piece;
-        }
+        squares[position.getRow()-1][position.getColumn()-1] = piece;
     }
 
     /**
