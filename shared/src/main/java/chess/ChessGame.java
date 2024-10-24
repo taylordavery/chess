@@ -280,7 +280,9 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        if (cantMove(teamColor)) return false;
+        if (cantMove(teamColor)) {
+            return false;
+        }
         return this.isInCheck(teamColor);
     }
 
@@ -292,7 +294,9 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        if (cantMove(teamColor)) return false;
+        if (cantMove(teamColor)) {
+            return false;
+        }
         return !this.isInCheck(teamColor);
     }
 

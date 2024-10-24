@@ -169,9 +169,9 @@ public class Server {
         int gameID = 0;
         try {
             gameID = this.service.createGame(authToken, gameName);
-        } catch (Exception e) {
-            if (e.getMessage().equals("Error: unauthorized")) {
-                Map<String, String> jsonResponse = getStringStringMap(response, e);
+        } catch (DataAccessException f) {
+            if (f.getMessage().equals("Error: unauthorized")) {
+                Map<String, String> jsonResponse = getStringStringMap(response, f);
                 return new Gson().toJson(jsonResponse);
             }
         }
