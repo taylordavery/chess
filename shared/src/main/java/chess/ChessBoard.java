@@ -1,6 +1,4 @@
 package chess;
-
-import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -12,7 +10,6 @@ import java.util.Arrays;
 public class ChessBoard {
     ChessPiece[][] squares = new ChessPiece[8][8];
     public ChessBoard() {
-//        resetBoard();
     }
 
     @Override

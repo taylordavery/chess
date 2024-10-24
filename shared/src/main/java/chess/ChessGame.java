@@ -280,21 +280,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        int rowNum = 0;
-        int colNum;
-
-        for (ChessPiece[] row : this.board.squares) {
-            rowNum = rowNum + 1;
-            colNum = 0;
-            for (ChessPiece piece : row) {
-                colNum = colNum + 1;
-                if (piece != null && piece.getTeamColor().equals(teamColor)) {
-                    for (ChessMove move : this.validMoves(new ChessPosition(rowNum, colNum))) {
-                        return false;
-                    }
-                }
-            }
-        }
+        if (cantMove(teamColor)) return false;
         return this.isInCheck(teamColor);
     }
 
@@ -306,6 +292,11 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
+        if (cantMove(teamColor)) return false;
+        return !this.isInCheck(teamColor);
+    }
+
+    private boolean cantMove(TeamColor teamColor) {
         int rowNum = 0;
         int colNum;
 
@@ -316,12 +307,12 @@ public class ChessGame {
                 colNum = colNum + 1;
                 if (piece != null && piece.getTeamColor().equals(teamColor)) {
                     for (ChessMove move : this.validMoves(new ChessPosition(rowNum, colNum))) {
-                        return false;
+                        return true;
                     }
                 }
             }
         }
-        return !this.isInCheck(teamColor);
+        return false;
     }
 
     /**
@@ -331,9 +322,7 @@ public class ChessGame {
      */
     public void setBoard(ChessBoard board) {
         for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                this.board.squares[i][j] = board.squares[i][j];
-            }
+            System.arraycopy(board.squares[i], 0, this.board.squares[i], 0, 8);
         }
     }
 

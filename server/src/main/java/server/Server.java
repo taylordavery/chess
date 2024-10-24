@@ -110,9 +110,7 @@ public class Server {
             authData = this.service.login(userData.username(), userData.password());
         } catch (Exception e) {
             if (e.getMessage().equals("Error: unauthorized")) {
-                response.status(401);
-                Map<String, String> jsonResponse = new HashMap<>();
-                jsonResponse.put("message", e.getMessage());
+                Map<String, String> jsonResponse = getStringStringMap(response, e);
                 return new Gson().toJson(jsonResponse);
             }
             response.status(500);
@@ -128,14 +126,19 @@ public class Server {
             this.service.logout(authToken);
         } catch (Exception e) {
             if (e.getMessage().equals("Error: unauthorized")) {
-                response.status(401);
-                Map<String, String> jsonResponse = new HashMap<>();
-                jsonResponse.put("message", e.getMessage());
+                Map<String, String> jsonResponse = getStringStringMap(response, e);
                 return new Gson().toJson(jsonResponse);
             }
         }
         response.status(200);
         return "";
+    }
+
+    private static Map<String, String> getStringStringMap(Response response, Exception e) {
+        response.status(401);
+        Map<String, String> jsonResponse = new HashMap<>();
+        jsonResponse.put("message", e.getMessage());
+        return jsonResponse;
     }
 
     private Object listGames(Request request, Response response) throws DataAccessException {
@@ -145,9 +148,7 @@ public class Server {
             games = this.service.listGames(authToken);
         } catch (Exception e) {
             if (e.getMessage().equals("Error: unauthorized")) {
-                response.status(401);
-                Map<String, String> jsonResponse = new HashMap<>();
-                jsonResponse.put("message", e.getMessage());
+                Map<String, String> jsonResponse = getStringStringMap(response, e);
                 return new Gson().toJson(jsonResponse);
             }
         }
@@ -170,9 +171,7 @@ public class Server {
             gameID = this.service.createGame(authToken, gameName);
         } catch (Exception e) {
             if (e.getMessage().equals("Error: unauthorized")) {
-                response.status(401);
-                Map<String, String> jsonResponse = new HashMap<>();
-                jsonResponse.put("message", e.getMessage());
+                Map<String, String> jsonResponse = getStringStringMap(response, e);
                 return new Gson().toJson(jsonResponse);
             }
         }
