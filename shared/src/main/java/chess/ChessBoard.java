@@ -23,14 +23,24 @@ public class ChessBoard {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         ChessBoard that = (ChessBoard) o;
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                if (squares[i][j] == null && that.squares[i][j] == null) continue;
-                if (squares[i][j] == null || that.squares[i][j] == null) return false;
-                if (!squares[i][j].equals(that.squares[i][j])) return false;
+                if (squares[i][j] == null && that.squares[i][j] == null) {
+                    continue;
+                }
+                if (squares[i][j] == null || that.squares[i][j] == null) {
+                    return false;
+                }
+                if (!squares[i][j].equals(that.squares[i][j])) {
+                    return false;
+                }
             }
         }
         return true;

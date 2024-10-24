@@ -34,8 +34,12 @@ public class ChessPiece {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         ChessPiece that = (ChessPiece) o;
         return this.teamColor.equals(that.teamColor) && this.pieceType.equals(that.pieceType);
     }
@@ -99,7 +103,9 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> moves = new ArrayList<>();
 
-        if (this.pieceType == PieceType.KING || this.pieceType == PieceType.QUEEN || this.pieceType == PieceType.BISHOP || this.pieceType == PieceType.ROOK || this.pieceType == PieceType.KNIGHT) {
+        if (this.pieceType == PieceType.KING || this.pieceType == PieceType.QUEEN ||
+                this.pieceType == PieceType.BISHOP || this.pieceType == PieceType.ROOK ||
+                this.pieceType == PieceType.KNIGHT) {
             calculateMovesForPieceType(board, myPosition, moves);
         }
 
@@ -159,18 +165,26 @@ public class ChessPiece {
 
     private void addCastlingMoves(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> moves) {
         // Castle Left
-        if (board.getPiece(new ChessPosition(board.getPosition(this).getRow(), board.getPosition(this).getColumn()-1)) == null) {
-            if (board.getPiece(new ChessPosition(board.getPosition(this).getRow(), board.getPosition(this).getColumn()-2)) == null) {
+        if (board.getPiece(new ChessPosition(board.getPosition(this).getRow(),
+                board.getPosition(this).getColumn()-1)) == null) {
+            if (board.getPiece(new ChessPosition(board.getPosition(this).getRow(),
+                    board.getPosition(this).getColumn()-2)) == null) {
                 leftCastleHelper(board, moves);
             }
         }
 
         // Castle Right
-        if (board.getPiece(new ChessPosition(board.getPosition(this).getRow(), board.getPosition(this).getColumn()+1)) == null) {
-            if (board.getPiece(new ChessPosition(board.getPosition(this).getRow(), board.getPosition(this).getColumn()+2)) == null) {
-                if (board.getPiece(new ChessPosition(board.getPosition(this).getRow(), board.getPosition(this).getColumn()+3)) != null) {
-                    if (!board.getPiece(new ChessPosition(board.getPosition(this).getRow(), board.getPosition(this).getColumn()+3)).getHasMoved()) {
-                        ChessMove castleMove = new ChessMove(board.getPosition(this), new ChessPosition(board.getPosition(this).getRow(), board.getPosition(this).getColumn()+2), null);
+        if (board.getPiece(new ChessPosition(board.getPosition(this).getRow(),
+                board.getPosition(this).getColumn()+1)) == null) {
+            if (board.getPiece(new ChessPosition(board.getPosition(this).getRow(),
+                    board.getPosition(this).getColumn()+2)) == null) {
+                if (board.getPiece(new ChessPosition(board.getPosition(this).getRow(),
+                        board.getPosition(this).getColumn()+3)) != null) {
+                    if (!board.getPiece(new ChessPosition(board.getPosition(this).getRow(),
+                            board.getPosition(this).getColumn()+3)).getHasMoved()) {
+                        ChessMove castleMove = new ChessMove(board.getPosition(this),
+                                new ChessPosition(board.getPosition(this).getRow(),
+                                        board.getPosition(this).getColumn()+2), null);
                         castleMove.setIsCastleMove(true);
                         moves.add(castleMove);
                     }
@@ -180,10 +194,15 @@ public class ChessPiece {
     }
 
     private void leftCastleHelper(ChessBoard board, Collection<ChessMove> moves) {
-        if (board.getPiece(new ChessPosition(board.getPosition(this).getRow(), board.getPosition(this).getColumn()-3)) == null) {
-            if (board.getPiece(new ChessPosition(board.getPosition(this).getRow(), board.getPosition(this).getColumn()-4)) != null) {
-                if (!board.getPiece(new ChessPosition(board.getPosition(this).getRow(), board.getPosition(this).getColumn()-4)).getHasMoved()) {
-                    ChessMove castleMove = new ChessMove(board.getPosition(this), new ChessPosition(board.getPosition(this).getRow(), board.getPosition(this).getColumn()-2), null);
+        if (board.getPiece(new ChessPosition(board.getPosition(this).getRow(),
+                board.getPosition(this).getColumn()-3)) == null) {
+            if (board.getPiece(new ChessPosition(board.getPosition(this).getRow(),
+                    board.getPosition(this).getColumn()-4)) != null) {
+                if (!board.getPiece(new ChessPosition(board.getPosition(this).getRow(),
+                        board.getPosition(this).getColumn()-4)).getHasMoved()) {
+                    ChessMove castleMove = new ChessMove(board.getPosition(this),
+                            new ChessPosition(board.getPosition(this).getRow(),
+                                    board.getPosition(this).getColumn()-2), null);
                     castleMove.setIsCastleMove(true);
                     moves.add(castleMove);
                 }
@@ -199,7 +218,8 @@ public class ChessPiece {
         if (board.getPiece(i) == null && i.getRow() != 8 && i.getRow() != 1) {
             moves.add(new ChessMove(myPosition, i, null));
             i = new ChessPosition(i.getRow() + direction, i.getColumn());
-            if (board.getPiece(i) == null && ((i.getRow() == 4 && this.getTeamColor() == ChessGame.TeamColor.WHITE) || (i.getRow() == 5 && this.getTeamColor() == ChessGame.TeamColor.BLACK))) {
+            if (board.getPiece(i) == null && ((i.getRow() == 4 && this.getTeamColor() == ChessGame.TeamColor.WHITE) ||
+                    (i.getRow() == 5 && this.getTeamColor() == ChessGame.TeamColor.BLACK))) {
                 moves.add(new ChessMove(myPosition, i, null));
             }
         } else if (board.getPiece(i) == null && (i.getRow() == 8 || i.getRow() == 1)) {

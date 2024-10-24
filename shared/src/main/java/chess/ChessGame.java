@@ -142,7 +142,8 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         ChessPiece fromPiece = this.board.getPiece(move.getStartPosition());
-        ChessPiece toPiece = this.board.squares[(move.getEndPosition()).getRow()-1][(move.getEndPosition()).getColumn()-1];
+        int endPosCol = move.getEndPosition().getColumn() - 1;
+        ChessPiece toPiece = this.board.squares[(move.getEndPosition()).getRow()-1][endPosCol];
 
         if (fromPiece == null) {
             throw new InvalidMoveException("No piece in starting position");
@@ -171,9 +172,10 @@ public class ChessGame {
          for (ChessMove validMove : this.validMoves(move.getStartPosition())) {
              if (move.equals(validMove)) {
                  this.board.squares[move.getStartPosition().getRow()-1][move.getStartPosition().getColumn()-1] = null;
-                 this.board.squares[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1] = fromPiece;
+                 int endPosRow = move.getEndPosition().getRow() - 1;
+                 this.board.squares[endPosRow][endPosCol] = fromPiece;
 
-                 this.board.squares[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1].setHasMoved(true);
+                 this.board.squares[endPosRow][endPosCol].setHasMoved(true);
 
                  if (validMove.getIsCastleMove()) {
                      // left castle
@@ -192,12 +194,14 @@ public class ChessGame {
                  }
 
                  if (validMove.getIsEnPassantMove()) {
-                     this.board.squares[move.getStartPosition().getRow()-1][move.getEndPosition().getColumn()-1] = null;
+                     this.board.squares[move.getStartPosition().getRow()-1][endPosCol] = null;
                  }
 
                  if (move.getPromotionPiece() != null) {
-                     this.board.squares[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1] = new ChessPiece(fromPiece.getTeamColor(), move.getPromotionPiece());
+                     this.board.squares[endPosRow][endPosCol] =
+                             new ChessPiece(fromPiece.getTeamColor(), move.getPromotionPiece());
                  }
+
 
                  if (this.getTeamTurn() == ChessGame.TeamColor.WHITE) {
                      this.setTeamTurn(ChessGame.TeamColor.BLACK);
@@ -205,9 +209,10 @@ public class ChessGame {
                      this.setTeamTurn(ChessGame.TeamColor.WHITE);
                  }
 
-                 if (this.board.squares[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1].getPieceType() == ChessPiece.PieceType.PAWN) {
-                     if (move.getStartPosition().getRow() - move.getEndPosition().getRow() > 1 || move.getStartPosition().getRow() - move.getEndPosition().getRow() < -1) {
-                         this.board.squares[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1].setJustDoubleMoved(true);
+                 if (this.board.squares[endPosRow][endPosCol].getPieceType() == ChessPiece.PieceType.PAWN) {
+                     if (move.getStartPosition().getRow() - move.getEndPosition().getRow() > 1 ||
+                             move.getStartPosition().getRow() - move.getEndPosition().getRow() < -1) {
+                         this.board.squares[endPosRow][endPosCol].setJustDoubleMoved(true);
                      }
                  }
 
@@ -250,7 +255,9 @@ public class ChessGame {
             for (ChessPiece piece : row) {
                 colNum = colNum + 1;
                 if (piece != null && !piece.getTeamColor().equals(teamColor)) {
-                    if (checkMovesEndOnKing(piece, rowNum, colNum, kingPosition)) return true;
+                    if (checkMovesEndOnKing(piece, rowNum, colNum, kingPosition)) {
+                        return true;
+                    }
                 }
             }
         }
