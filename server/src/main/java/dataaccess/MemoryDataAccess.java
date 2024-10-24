@@ -18,21 +18,30 @@ public class MemoryDataAccess implements DataAccess {
 
     @Override
     public void clear() throws DataAccessException {
-        users.clear();
-        games.clear();
-        activeSessions.clear();
+        try {
+            users.clear();
+            games.clear();
+            activeSessions.clear();
+        } catch (Exception e) {
+            throw new DataAccessException("Unable to clear database");
+        }
     }
 
     @Override
     public AuthData register(String username, String password, String email) throws DataAccessException {
         // Check if the user already exists
         if (users.containsKey(username)) {
-            throw new DataAccessException("User already exists");
+            throw new DataAccessException("Error: already taken");
         }
         // Store the user and create an AuthData object
-        users.put(username, new UserData(username, password, email));
-        AuthData auth = new AuthData(UUID.randomUUID(), username);
-        activeSessions.put(auth.authToken(), auth.username());
+        AuthData auth;
+        try {
+            users.put(username, new UserData(username, password, email));
+            auth = new AuthData(UUID.randomUUID(), username);
+            activeSessions.put(auth.authToken(), auth.username());
+        } catch (Exception e) {
+            throw new DataAccessException(e.getMessage());
+        }
         return auth;
     }
 

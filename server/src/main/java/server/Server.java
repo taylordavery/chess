@@ -44,14 +44,40 @@ public class Server {
     }
 
     private Object clear(Request req, Response res) throws DataAccessException {
-        this.service.clear();
+        try {
+            this.service.clear();
+        } catch (Exception e) {
+            res.status(500);
+            return new Gson().toJson(e.getMessage());
+        }
         res.status(200);
         return "";
     }
 
     private Object register(Request req, Response res) throws DataAccessException {
-        UserData userData = new Gson().fromJson(req.body(), UserData.class);
-        AuthData authData = this.service.register(userData.username(), userData.password(), userData.email());
+        UserData userData;
+        try {
+            userData = new Gson().fromJson(req.body(), UserData.class);
+        } catch (Exception e) {
+            res.status(500);
+            return new Gson().toJson(e.getMessage());
+        }
+        AuthData authData = null;
+        try {
+            authData = this.service.register(userData.username(), userData.password(), userData.email());
+        } catch (DataAccessException e) {
+            switch (e.getMessage()) {
+                case "Error: bad request":
+                    res.status(400);
+                    break;
+                case "Error: already taken":
+                    res.status(403);
+                    return new Gson().toJson(e.getMessage());
+                default:
+                    res.status(500);
+                    return new Gson().toJson(e.getMessage());
+            }
+        }
         res.status(200);
         return new Gson().toJson(authData);
     }
