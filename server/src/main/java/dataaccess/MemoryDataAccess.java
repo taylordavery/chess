@@ -13,7 +13,7 @@ public class MemoryDataAccess implements DataAccess {
     // Sample data storage
     private final Map<String, UserData> users = new HashMap<>();
     private final Map<String, GameData> games = new HashMap<>();
-    private final Map<AuthData, String> activeSessions = new HashMap<>(); // authToken to username mapping
+    private final Map<UUID, String> activeSessions = new HashMap<>(); // authToken to username mapping
 
     @Override
     public void clear() throws DataAccessException {
@@ -31,7 +31,7 @@ public class MemoryDataAccess implements DataAccess {
         // Store the user and create an AuthData object
         users.put(username, new UserData(username, password, email));
         AuthData auth = new AuthData(UUID.randomUUID(), username);
-        activeSessions.put(auth, username);
+        activeSessions.put(auth.authToken(), auth.username());
         return auth;
     }
 
@@ -42,7 +42,7 @@ public class MemoryDataAccess implements DataAccess {
             throw new DataAccessException("Invalid username or password");
         }
         AuthData auth = new AuthData(UUID.randomUUID(), username);
-        activeSessions.put(auth, username);
+        activeSessions.put(auth.authToken(), auth.username());
         return auth;
     }
 
@@ -55,7 +55,7 @@ public class MemoryDataAccess implements DataAccess {
     }
 
     @Override
-    public Collection<GameData> listGames(AuthData authToken) throws DataAccessException {
+    public Collection<GameData> listGames(UUID authToken) throws DataAccessException {
         if (!activeSessions.containsKey(authToken)) {
             throw new DataAccessException("Invalid auth token");
         }
@@ -63,7 +63,7 @@ public class MemoryDataAccess implements DataAccess {
     }
 
     @Override
-    public int createGame(AuthData authToken, String gameName) throws DataAccessException {
+    public int createGame(UUID authToken, String gameName) throws DataAccessException {
         if (!activeSessions.containsKey(authToken)) {
             throw new DataAccessException("Invalid auth token");
         }
@@ -73,7 +73,7 @@ public class MemoryDataAccess implements DataAccess {
     }
 
     @Override
-    public void joinGame(AuthData authToken, String playerColor, int gameID) throws DataAccessException {
+    public void joinGame(UUID authToken, String playerColor, int gameID) throws DataAccessException {
         if (!activeSessions.containsKey(authToken)) {
             throw new DataAccessException("Invalid auth token");
         }

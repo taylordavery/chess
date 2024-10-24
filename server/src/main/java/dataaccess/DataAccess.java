@@ -14,9 +14,9 @@ public interface DataAccess {
 
     void logout(UUID authToken) throws DataAccessException;
 
-    Collection<GameData> listGames(AuthData authToken) throws DataAccessException;
+    Collection<GameData> listGames(UUID authToken) throws DataAccessException;
 
-    int createGame(AuthData authToken, String gameName) throws DataAccessException;
+    int createGame(UUID authToken, String gameName) throws DataAccessException;
 
-    void  joinGame(AuthData authToken, String playerColor, int gameID) throws DataAccessException;
+    void  joinGame(UUID authToken, String playerColor, int gameID) throws DataAccessException;
 }

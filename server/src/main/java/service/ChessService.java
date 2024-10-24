@@ -34,11 +34,11 @@ public class ChessService {
         return dataAccess.listGames(authToken);
     }
 
-    public int createGame(AuthData authToken, String gameName) throws DataAccessException {
+    public int createGame(UUID authToken, String gameName) throws DataAccessException {
         return dataAccess.createGame(authToken, gameName);
     }
 
-    public void  joinGame(AuthData authToken, String playerColor, int gameID) throws DataAccessException {
+    public void  joinGame(UUID authToken, String playerColor, int gameID) throws DataAccessException {
         dataAccess.joinGame(authToken, playerColor, gameID);
     }
 }

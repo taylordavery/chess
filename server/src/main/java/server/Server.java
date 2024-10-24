@@ -2,18 +2,16 @@ package server;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import dataaccess.DataAccessException;
-import dataaccess.MemoryDataAccess;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
 import service.ChessService;
 import spark.*;
 
-import javax.xml.crypto.Data;
 import java.io.Reader;
 import java.util.Collection;
-import java.util.Set;
 import java.util.UUID;
 
 public class Server {
@@ -47,7 +45,6 @@ public class Server {
         Spark.awaitStop();
     }
 
-    // Register the DELETE /db endpoint
     private Object clear(Request req, Response res) throws DataAccessException {
         this.service.clear(); // Call the method to clear the database
         res.status(200); // Set the response status to 200
@@ -55,7 +52,6 @@ public class Server {
     }
 
     private Object register(Request req, Response res) throws DataAccessException {
-        String body = req.body();
         UserData userData = new Gson().fromJson(req.body(), UserData.class);
         AuthData authData = this.service.register(userData.username(), userData.password(), userData.email());
         res.status(200);
@@ -63,7 +59,6 @@ public class Server {
     }
 
     private Object login(Request request, Response response) throws DataAccessException {
-        String body = request.body();
         UserData userData = new Gson().fromJson(request.body(), UserData.class);
         AuthData authData = this.service.login(userData.username(), userData.password());
         response.status(200);
@@ -71,21 +66,36 @@ public class Server {
     }
 
     private Object logout(Request request, Response response) throws DataAccessException {
-        Set<String> headers = request.headers();
-        UUID authToken = new Gson().fromJson((Reader) request.headers(), UUID.class);
+        UUID authToken = new Gson().fromJson(request.headers("authorization"), UUID.class);
         this.service.logout(authToken);
         response.status(200);
         return "";
     }
 
     private Object listGames(Request request, Response response) throws DataAccessException {
-        Set<String> headers = request.headers();
-        UUID authToken = new Gson().fromJson((Reader) request.headers(), UUID.class);
+        UUID authToken = new Gson().fromJson(request.headers("authorization"), UUID.class);
         Collection<GameData> games = this.service.listGames(authToken);
         response.status(200);
         return new Gson().toJson(games);
     }
 
+    private Object createGame(Request request, Response response) throws DataAccessException {
+        UUID authToken = new Gson().fromJson(request.headers("authorization"), UUID.class);
+        String gameName = new Gson().fromJson(request.body(), String.class);
+        int gameID = this.service.createGame(authToken, gameName);
+        response.status(200);
+        return  gameID;
+    }
+
+    private Object joinGame(Request request, Response response) throws DataAccessException {
+        UUID authToken = new Gson().fromJson(request.headers("authorization"), UUID.class);
+        JsonObject body = JsonParser.parseString(request.body()).getAsJsonObject();
+        String playerColor = body.get("playerColor").getAsString();
+        int gameID = body.get("gameID").getAsInt();
+        this.service.joinGame(authToken, playerColor, gameID);
+        response.status(200);
+        return "";
+    }
 
 }
 
