@@ -1,6 +1,8 @@
 package server;
 
+import dataaccess.DataAccess;
 import dataaccess.DataAccessException;
+import dataaccess.MemoryDataAccess;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -10,14 +12,19 @@ import spark.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import javax.xml.crypto.Data;
 import java.util.Collection;
 import java.util.UUID;
 
 public class Server {
     public ChessService service;
+    public DataAccess dataAccess = new MemoryDataAccess();
 
     public Server() {;
+        this.service = new ChessService(dataAccess);
     }
+
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
