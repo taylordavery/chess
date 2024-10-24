@@ -1,14 +1,15 @@
 package server;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import dataaccess.DataAccessException;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
 import service.ChessService;
+
 import spark.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import java.util.Collection;
 import java.util.UUID;
 
