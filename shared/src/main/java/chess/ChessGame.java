@@ -250,12 +250,17 @@ public class ChessGame {
             for (ChessPiece piece : row) {
                 colNum = colNum + 1;
                 if (piece != null && !piece.getTeamColor().equals(teamColor)) {
-                    for (ChessMove move : piece.pieceMoves(this.board, new ChessPosition(rowNum, colNum))) {
-                        if (move.getEndPosition().equals(kingPosition)) {
-                            return true;
-                        }
-                    }
+                    if (checkMovesEndOnKing(piece, rowNum, colNum, kingPosition)) return true;
                 }
+            }
+        }
+        return false;
+    }
+
+    private boolean checkMovesEndOnKing(ChessPiece piece, int rowNum, int colNum, ChessPosition kingPosition) {
+        for (ChessMove move : piece.pieceMoves(this.board, new ChessPosition(rowNum, colNum))) {
+            if (move.getEndPosition().equals(kingPosition)) {
+                return true;
             }
         }
         return false;

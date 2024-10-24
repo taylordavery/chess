@@ -161,15 +161,7 @@ public class ChessPiece {
         // Castle Left
         if (board.getPiece(new ChessPosition(board.getPosition(this).getRow(), board.getPosition(this).getColumn()-1)) == null) {
             if (board.getPiece(new ChessPosition(board.getPosition(this).getRow(), board.getPosition(this).getColumn()-2)) == null) {
-                if (board.getPiece(new ChessPosition(board.getPosition(this).getRow(), board.getPosition(this).getColumn()-3)) == null) {
-                    if (board.getPiece(new ChessPosition(board.getPosition(this).getRow(), board.getPosition(this).getColumn()-4)) != null) {
-                        if (!board.getPiece(new ChessPosition(board.getPosition(this).getRow(), board.getPosition(this).getColumn()-4)).getHasMoved()) {
-                            ChessMove castleMove = new ChessMove(board.getPosition(this), new ChessPosition(board.getPosition(this).getRow(), board.getPosition(this).getColumn()-2), null);
-                            castleMove.setIsCastleMove(true);
-                            moves.add(castleMove);
-                        }
-                    }
-                }
+                leftCastleHelper(board, moves);
             }
         }
 
@@ -182,6 +174,18 @@ public class ChessPiece {
                         castleMove.setIsCastleMove(true);
                         moves.add(castleMove);
                     }
+                }
+            }
+        }
+    }
+
+    private void leftCastleHelper(ChessBoard board, Collection<ChessMove> moves) {
+        if (board.getPiece(new ChessPosition(board.getPosition(this).getRow(), board.getPosition(this).getColumn()-3)) == null) {
+            if (board.getPiece(new ChessPosition(board.getPosition(this).getRow(), board.getPosition(this).getColumn()-4)) != null) {
+                if (!board.getPiece(new ChessPosition(board.getPosition(this).getRow(), board.getPosition(this).getColumn()-4)).getHasMoved()) {
+                    ChessMove castleMove = new ChessMove(board.getPosition(this), new ChessPosition(board.getPosition(this).getRow(), board.getPosition(this).getColumn()-2), null);
+                    castleMove.setIsCastleMove(true);
+                    moves.add(castleMove);
                 }
             }
         }
