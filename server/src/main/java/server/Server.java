@@ -81,11 +81,13 @@ public class Server {
 
     private Object createGame(Request request, Response response) throws DataAccessException {
         UUID authToken = new Gson().fromJson(request.headers("authorization"), UUID.class);
-        String gameName = new Gson().fromJson(request.body(), String.class);
+        JsonObject jsonBody = JsonParser.parseString(request.body()).getAsJsonObject();
+        String gameName = jsonBody.get("gameName").getAsString(); // Adjust according to your JSON structure
         int gameID = this.service.createGame(authToken, gameName);
         response.status(200);
-        return  gameID;
+        return gameID;
     }
+
 
     private Object joinGame(Request request, Response response) throws DataAccessException {
         UUID authToken = new Gson().fromJson(request.headers("authorization"), UUID.class);
@@ -95,7 +97,6 @@ public class Server {
         this.service.joinGame(authToken, playerColor, gameID);
         response.status(200);
         return "";
-
     }
 
 }
