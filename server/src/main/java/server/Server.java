@@ -95,6 +95,7 @@ public class Server {
         this.service.joinGame(authToken, playerColor, gameID);
         response.status(200);
         return "";
+
     }
 
 }
