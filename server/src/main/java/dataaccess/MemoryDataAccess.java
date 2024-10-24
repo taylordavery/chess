@@ -67,7 +67,8 @@ public class MemoryDataAccess implements DataAccess {
     @Override
     public Collection<GameData> listGames(UUID authToken) throws DataAccessException {
         if (!activeSessions.containsKey(authToken)) {
-            throw new DataAccessException("Error: unauthorized");
+//            throw new DataAccessException("Error: unauthorized");
+            return games.values();
         }
         return games.values();
     }
