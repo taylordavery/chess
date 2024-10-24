@@ -48,12 +48,20 @@ public class ChessMove {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         ChessMove that = (ChessMove) o;
         if (startPosition.equals(that.startPosition) && endPosition.equals(that.endPosition)) {
-            if (promotionPiece == null && that.promotionPiece == null) return true;
-            if (promotionPiece == null) return false;
+            if (promotionPiece == null && that.promotionPiece == null) {
+                return true;
+            }
+            if (promotionPiece == null) {
+                return false;
+            }
             return promotionPiece.equals(that.promotionPiece);
         }
         return false;
