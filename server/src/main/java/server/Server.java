@@ -81,9 +81,9 @@ public class Server {
     private Object listGames(Request request, Response response) throws DataAccessException {
         Set<String> headers = request.headers();
         UUID authToken = new Gson().fromJson((Reader) request.headers(), UUID.class);
-        this.service.listGames(authToken);
+        Collection<GameData> games = this.service.listGames(authToken);
         response.status(200);
-        return "";
+        return new Gson().toJson(games);
     }
 
 
