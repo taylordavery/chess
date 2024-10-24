@@ -13,10 +13,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.UUID;
-import java.util.Map;
+import java.util.*;
 
 public class Server {
     public ChessService service;
@@ -143,7 +140,17 @@ public class Server {
 
     private Object listGames(Request request, Response response) throws DataAccessException {
         UUID authToken = new Gson().fromJson(request.headers("authorization"), UUID.class);
-        Collection<GameData> games = this.service.listGames(authToken);
+        Collection<GameData> games = List.of();
+        try {
+            games = this.service.listGames(authToken);
+        } catch (Exception e) {
+            if (e.getMessage().equals("Error: unauthorized")) {
+                response.status(401);
+                Map<String, String> jsonResponse = new HashMap<>();
+                jsonResponse.put("message", e.getMessage());
+                return new Gson().toJson(jsonResponse);
+            }
+        }
 
         // Wrap the games list in a JSON object
         Map<String, Object> responseBody = new HashMap<>();
