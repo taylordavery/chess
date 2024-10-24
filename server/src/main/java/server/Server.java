@@ -13,9 +13,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import javax.xml.crypto.Data;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.UUID;
+import java.util.Map;
 
 public class Server {
     public ChessService service;
@@ -68,36 +69,74 @@ public class Server {
             res.status(500);
             return new Gson().toJson(e.getMessage());
         }
-        AuthData authData = null;
+
+        if (userData.username() == null || userData.username().isEmpty() ||
+                userData.password() == null || userData.password().isEmpty() ||
+                userData.email() == null || userData.email().isEmpty()) {
+            res.status(400);
+            Map<String, String> jsonResponse = new HashMap<>();
+            jsonResponse.put("message", "Error: missing required field");
+            return new Gson().toJson(jsonResponse);
+        }
+
+        AuthData authData;
         try {
             authData = this.service.register(userData.username(), userData.password(), userData.email());
         } catch (DataAccessException e) {
+            Map<String, String> jsonResponse;
             switch (e.getMessage()) {
+                case "Error: missing required field":
                 case "Error: bad request":
                     res.status(400);
-                    break;
+                    jsonResponse = new HashMap<>();
+                    jsonResponse.put("message", e.getMessage());
+                    return new Gson().toJson(jsonResponse);
                 case "Error: already taken":
                     res.status(403);
-                    return new Gson().toJson(e.getMessage());
+                    jsonResponse = new HashMap<>();
+                    jsonResponse.put("message", e.getMessage());
+                    return new Gson().toJson(jsonResponse);
                 default:
                     res.status(500);
                     return new Gson().toJson(e.getMessage());
             }
         }
+
         res.status(200);
         return new Gson().toJson(authData);
     }
 
     private Object login(Request request, Response response) throws DataAccessException {
         UserData userData = new Gson().fromJson(request.body(), UserData.class);
-        AuthData authData = this.service.login(userData.username(), userData.password());
+        AuthData authData;
+        try {
+            authData = this.service.login(userData.username(), userData.password());
+        } catch (Exception e) {
+            if (e.getMessage().equals("Error: unauthorized")) {
+                response.status(401);
+                Map<String, String> jsonResponse = new HashMap<>();
+                jsonResponse.put("message", e.getMessage());
+                return new Gson().toJson(jsonResponse);
+            }
+            response.status(500);
+            return new Gson().toJson(e.getMessage());
+        }
         response.status(200);
         return new Gson().toJson(authData);
     }
 
     private Object logout(Request request, Response response) throws DataAccessException {
         UUID authToken = new Gson().fromJson(request.headers("authorization"), UUID.class);
-        this.service.logout(authToken);
+        try {
+            this.service.logout(authToken);
+        } catch (Exception e) {
+            if (e.getMessage().equals("Error: unauthorized")) {
+                response.status(401);
+                Map<String, String> jsonResponse = new HashMap<>();
+                jsonResponse.put("message", e.getMessage());
+                return new Gson().toJson(jsonResponse);
+            }
+        }
         response.status(200);
         return "";
     }
@@ -105,26 +144,86 @@ public class Server {
     private Object listGames(Request request, Response response) throws DataAccessException {
         UUID authToken = new Gson().fromJson(request.headers("authorization"), UUID.class);
         Collection<GameData> games = this.service.listGames(authToken);
+
+        // Wrap the games list in a JSON object
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("games", games);
+
         response.status(200);
-        return new Gson().toJson(games);
+        return new Gson().toJson(responseBody);  // Return the games wrapped in a key
     }
+
 
     private Object createGame(Request request, Response response) throws DataAccessException {
         UUID authToken = new Gson().fromJson(request.headers("authorization"), UUID.class);
         JsonObject jsonBody = JsonParser.parseString(request.body()).getAsJsonObject();
         String gameName = jsonBody.get("gameName").getAsString();
-        int gameID = this.service.createGame(authToken, gameName);
+        int gameID = 0;
+        try {
+            gameID = this.service.createGame(authToken, gameName);
+        } catch (Exception e) {
+            if (e.getMessage().equals("Error: unauthorized")) {
+                response.status(401);
+                Map<String, String> jsonResponse = new HashMap<>();
+                jsonResponse.put("message", e.getMessage());
+                return new Gson().toJson(jsonResponse);
+            }
+        }
         response.status(200);
-        return gameID;
+        JsonObject jsonResponse = new JsonObject();
+        jsonResponse.addProperty("gameID", gameID);
+        return new Gson().toJson(jsonResponse);
     }
 
     private Object joinGame(Request request, Response response) throws DataAccessException {
-        UUID authToken = new Gson().fromJson(request.headers("authorization"), UUID.class);
+        UUID authToken;
+        try {
+            authToken = new Gson().fromJson(request.headers("authorization"), UUID.class);
+        } catch (Exception e) {
+            response.status(401);
+            Map<String, String> jsonResponse = new HashMap<>();
+            jsonResponse.put("message", "Error: unauthorized");
+            return new Gson().toJson(jsonResponse);
+        }
         JsonObject body = JsonParser.parseString(request.body()).getAsJsonObject();
-        String playerColor = body.get("playerColor").getAsString();
-        int gameID = body.get("gameID").getAsInt();
-        this.service.joinGame(authToken, playerColor, gameID);
+
+        // Check if playerColor is present and not null
+        String playerColor = body.has("playerColor") && !body.get("playerColor").isJsonNull()
+                ? body.get("playerColor").getAsString()
+                : null;
+
+        int gameID;
+        if (body.get("gameID") != null) {
+            gameID = body.get("gameID").getAsInt();
+        } else {
+            response.status(400);
+            Map<String, String> jsonResponse = new HashMap<>();
+            jsonResponse.put("message", "Error: bad request");
+            return new Gson().toJson(jsonResponse);
+        }
+
+        try {
+            this.service.joinGame(authToken, playerColor, gameID);
+        } catch (Exception e) {
+            // Map exception messages to status codes
+            Map<String, Integer> statusCodes = new HashMap<>();
+            statusCodes.put("Error: bad request", 400);
+            statusCodes.put("Error: unauthorized", 401);
+            statusCodes.put("Error: already taken", 403);
+
+            int statusCode = statusCodes.getOrDefault(e.getMessage(), 500);
+            response.status(statusCode);
+
+            // Return JSON error message
+            Map<String, String> jsonResponse = new HashMap<>();
+            jsonResponse.put("message", e.getMessage());
+
+            return new Gson().toJson(jsonResponse);
+        }
+
+        // Success status
         response.status(200);
         return "";
     }
+
 }

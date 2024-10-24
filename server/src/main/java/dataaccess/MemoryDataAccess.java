@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.UUID;
 
 public class MemoryDataAccess implements DataAccess {
-    // Sample data storage
     private final Map<String, UserData> users = new HashMap<>();
     private final Map<String, GameData> games = new HashMap<>();
     private final Map<UUID, String> activeSessions = new HashMap<>(); // authToken to username mapping
@@ -29,11 +28,12 @@ public class MemoryDataAccess implements DataAccess {
 
     @Override
     public AuthData register(String username, String password, String email) throws DataAccessException {
-        // Check if the user already exists
+        if (username == null || password == null || email == null) {
+            throw new DataAccessException("Error: missing required field");
+        }
         if (users.containsKey(username)) {
             throw new DataAccessException("Error: already taken");
         }
-        // Store the user and create an AuthData object
         AuthData auth;
         try {
             users.put(username, new UserData(username, password, email));
@@ -49,7 +49,7 @@ public class MemoryDataAccess implements DataAccess {
     public AuthData login(String username, String password) throws DataAccessException {
         UserData user = users.get(username);
         if (user == null || !user.getPassword().equals(password)) {
-            throw new DataAccessException("Invalid username or password");
+            throw new DataAccessException("Error: unauthorized");
         }
         AuthData auth = new AuthData(UUID.randomUUID(), username);
         activeSessions.put(auth.authToken(), auth.username());
@@ -59,7 +59,7 @@ public class MemoryDataAccess implements DataAccess {
     @Override
     public void logout(UUID authToken) throws DataAccessException {
         if (!activeSessions.containsKey(authToken)) {
-            throw new DataAccessException("Invalid auth token");
+            throw new DataAccessException("Error: unauthorized");
         }
         activeSessions.remove(authToken);
     }
@@ -67,17 +67,17 @@ public class MemoryDataAccess implements DataAccess {
     @Override
     public Collection<GameData> listGames(UUID authToken) throws DataAccessException {
         if (!activeSessions.containsKey(authToken)) {
-            throw new DataAccessException("Invalid auth token");
+            throw new DataAccessException("Error: unauthorized");
         }
-        return games.values(); // Return all games
+        return games.values();
     }
 
     @Override
     public int createGame(UUID authToken, String gameName) throws DataAccessException {
         if (!activeSessions.containsKey(authToken)) {
-            throw new DataAccessException("Invalid auth token");
+            throw new DataAccessException("Error: unauthorized");
         }
-        int gameID = games.size() + 1; // Generate a simple game ID
+        int gameID = games.size() + 1;
         games.put("game" + gameID, new GameData(gameID, null, null, gameName, new ChessGame()));
         return gameID;
     }
@@ -85,22 +85,28 @@ public class MemoryDataAccess implements DataAccess {
     @Override
     public void joinGame(UUID authToken, String playerColor, int gameID) throws DataAccessException {
         if (!activeSessions.containsKey(authToken)) {
-            throw new DataAccessException("Invalid auth token");
+            throw new DataAccessException("Error: unauthorized");
         }
 
         // Check if the game exists
         GameData game = games.get("game" + gameID);
         if (game == null) {
-            throw new DataAccessException("Game does not exist");
+            throw new DataAccessException("Error: bad request");
         }
 
         // Check if the color is already taken
         try {
+            game.isColorTaken(playerColor);
+        } catch (Exception e) {
+            throw new DataAccessException("Error: bad request");
+        }
+
+        try {
             if (game.isColorTaken(playerColor)) {
-                throw new DataAccessException("Color is already taken");
+                throw new DataAccessException("Error: already taken");
             }
         } catch (Exception e) {
-            throw new DataAccessException("Invalid color");
+            throw new DataAccessException("Error: already taken");
         }
 
         // Get the username associated with the auth token
@@ -108,8 +114,5 @@ public class MemoryDataAccess implements DataAccess {
 
         // Add the player to the game
         game.addPlayer(playerColor, username);
-
-        // Add player to game (you'll need to implement GameData to support this)
-        // Example: games.get("game" + gameID).addPlayer(authToken, playerColor);
     }
 }
