@@ -17,7 +17,6 @@ public class Server {
     public ChessService service;
 
     public Server() {;
-        this.service = null;
     }
 
     public int run(int desiredPort) {
