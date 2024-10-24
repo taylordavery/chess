@@ -146,9 +146,9 @@ public class Server {
         Collection<GameData> games = List.of();
         try {
             games = this.service.listGames(authToken);
-        } catch (Exception e) {
-            if (e.getMessage().equals("Error: unauthorized")) {
-                Map<String, String> jsonResponse = getStringStringMap(response, e);
+        } catch (DataAccessException g) {
+            if (g.getMessage().equals("Error: unauthorized")) {
+                Map<String, String> jsonResponse = getStringStringMap(response, g);
                 return new Gson().toJson(jsonResponse);
             }
         }
