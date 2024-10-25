@@ -78,6 +78,9 @@ public class MemoryDataAccess implements DataAccess {
         if (!activeSessions.containsKey(authToken)) {
             throw new DataAccessException("Error: unauthorized");
         }
+        if (gameName == null) {
+            throw new DataAccessException("Error: missing required field");
+        }
         int gameID = games.size() + 1;
         games.put("game" + gameID, new GameData(gameID, null, null, gameName, new ChessGame()));
         return gameID;
