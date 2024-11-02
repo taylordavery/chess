@@ -1,17 +1,11 @@
 package dataaccess;
 
-import model.AuthData;
-import model.GameData;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.List;
 import java.util.Properties;
-import java.util.UUID;
 
-public class DatabaseManager implements DataAccess{
+public class DatabaseManager {
     private static final String DATABASE_NAME;
     private static final String USER;
     private static final String PASSWORD;
@@ -76,77 +70,5 @@ public class DatabaseManager implements DataAccess{
         } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
         }
-    }
-
-    /**
-     * @throws DataAccessException
-     */
-    @Override
-    public void clear() throws DataAccessException {
-
-    }
-
-    /**
-     * @param username
-     * @param password
-     * @param email
-     * @return
-     * @throws DataAccessException
-     */
-    @Override
-    public AuthData register(String username, String password, String email) throws DataAccessException {
-        return null;
-    }
-
-    /**
-     * @param username
-     * @param password
-     * @return
-     * @throws DataAccessException
-     */
-    @Override
-    public AuthData login(String username, String password) throws DataAccessException {
-        return null;
-    }
-
-    /**
-     * @param authToken
-     * @throws DataAccessException
-     */
-    @Override
-    public void logout(UUID authToken) throws DataAccessException {
-
-    }
-
-    /**
-     * @param authToken
-     * @return
-     * @throws DataAccessException
-     */
-    @Override
-    public Collection<GameData> listGames(UUID authToken) throws DataAccessException {
-        return List.of();
-    }
-
-    /**
-     * @param authToken
-     * @param gameName
-     * @return
-     * @throws DataAccessException
-     */
-    @Override
-    public int createGame(UUID authToken, String gameName) throws DataAccessException {
-        return 0;
-    }
-
-    /**
-     * @param authToken
-     * @param playerColor
-     * @param gameID
-     * @throws DataAccessException
-     */
-    @Override
-    public void joinGame(UUID authToken, String playerColor, int gameID) throws DataAccessException {
-
     }
 }

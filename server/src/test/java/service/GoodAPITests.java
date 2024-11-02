@@ -2,6 +2,7 @@ package service;
 
 import dataaccess.DataAccess;
 import dataaccess.DataAccessException;
+import dataaccess.DatabaseManager;
 import dataaccess.MemoryDataAccess;
 import model.AuthData;
 import org.junit.jupiter.api.Test;
@@ -12,7 +13,8 @@ public class GoodAPITests {
     private int gameID;
 
     public GoodAPITests() {
-        this.dataAccess = new MemoryDataAccess();
+//        this.dataAccess = new MemoryDataAccess();
+        this.dataAccess = new DatabaseManager();
     }
 
     @Test
