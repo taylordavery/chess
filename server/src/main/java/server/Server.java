@@ -97,7 +97,9 @@ public class Server {
                     return new Gson().toJson(jsonResponse);
                 default:
                     res.status(500);
-                    return new Gson().toJson(e.getMessage());
+                    jsonResponse = new HashMap<>();
+                    jsonResponse.put("message", e.getMessage());
+                    return new Gson().toJson(jsonResponse);
             }
         } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());

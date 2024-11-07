@@ -5,6 +5,7 @@ import chess.ChessGame;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -143,7 +144,9 @@ public class MySqlDataAccess implements DataAccess {
             throw new DataAccessException("Error: missing required field");
         }
 
-        UserData user = new UserData(username, password, email);
+        String salt = BCrypt.gensalt(0);
+        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+        UserData user = new UserData(username, hashedPassword, email);
         AuthData auth;
 
         try (var conn = DatabaseManager.getConnection();
@@ -160,7 +163,7 @@ public class MySqlDataAccess implements DataAccess {
             try (var ps = conn.prepareStatement(insertUserSql)) {
                 String json = new Gson().toJson(user);
                 ps.setString(1, username);
-                ps.setString(2, password);
+                ps.setString(2, hashedPassword);
                 ps.setString(3, email);
                 ps.setString(4, json);
                 ps.executeUpdate();
@@ -188,7 +191,19 @@ public class MySqlDataAccess implements DataAccess {
 
             stmt.setString(1, username);
             try (var rs = stmt.executeQuery()) {
-                if (!rs.next() || !rs.getString("password").equals(password)) {
+//                if (!rs.next() || !rs.getString("password").equals(password)) {
+//                    throw new DataAccessException("Error: unauthorized");
+//                }
+
+                if (!rs.next()) {
+                    throw new DataAccessException("Error: unauthorized");
+                }
+
+                // Retrieve the hashed password from the database
+                String storedHashedPassword = rs.getString("password");
+
+                // Verify the provided password against the stored hash
+                if (!BCrypt.checkpw(password, storedHashedPassword)) {
                     throw new DataAccessException("Error: unauthorized");
                 }
             }
@@ -411,7 +426,6 @@ public class MySqlDataAccess implements DataAccess {
     CREATE TABLE IF NOT EXISTS activeSessions (
       `username` VARCHAR(255) NOT NULL,
       `authToken` VARCHAR(255) NOT NULL,
-      `json` TEXT DEFAULT NULL,
       PRIMARY KEY (`authToken`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
     """
