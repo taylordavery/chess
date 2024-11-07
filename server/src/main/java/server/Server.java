@@ -49,7 +49,7 @@ public class Server {
         Spark.awaitStop();
     }
 
-    private Object clear(Request req, Response res) throws DataAccessException {
+    private Object clear(Request req, Response res) {
         try {
             this.service.clear();
         } catch (Exception e) {
@@ -66,7 +66,9 @@ public class Server {
             userData = new Gson().fromJson(req.body(), UserData.class);
         } catch (Exception e) {
             res.status(500);
-            return new Gson().toJson(e.getMessage());
+            Map<String, String> jsonResponse = new HashMap<>();
+            jsonResponse.put("message", "Error");
+            return new Gson().toJson(jsonResponse);
         }
 
         if (userData.username() == null || userData.username().isEmpty() ||
