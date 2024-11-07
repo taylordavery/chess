@@ -152,7 +152,7 @@ public class MySqlDataAccess implements DataAccess {
             checkStmt.setString(1, username);
             try (var rs = checkStmt.executeQuery()) {
                 if (rs.next() && rs.getInt(1) > 0) {
-                    throw new DataAccessException("Error: username already taken");
+                    throw new DataAccessException("Error: already taken");
                 }
             }
 
@@ -267,13 +267,22 @@ public class MySqlDataAccess implements DataAccess {
 
             try (var rs = ps.getGeneratedKeys()) {
                 if (rs.next()) {
+                    int gameID = rs.getInt(1);
+
+                    // update JSON with correct gameID
+                    String updateQuery = "UPDATE games SET json = JSON_SET(json, '$.gameID', ?) WHERE gameID = ?";
+                    PreparedStatement updateStmt = conn.prepareStatement(updateQuery);
+                    updateStmt.setInt(1, gameID);
+                    updateStmt.setInt(2, gameID);
+                    updateStmt.executeUpdate();
                     return rs.getInt(1);
                 }
             }
         } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
         }
-        return 0;
+        throw new DataAccessException("I don't know what's wrong.");
+//        return 0;
     }
 
     @Override
@@ -291,6 +300,8 @@ public class MySqlDataAccess implements DataAccess {
             selectGame.setInt(1, gameID);
             try (var rs = selectGame.executeQuery()) {
                 if (!rs.next()) throw new DataAccessException("Error: game not found");
+
+                if (playerColor == null) throw new DataAccessException("Error: bad request");
 
                 GameData game = new Gson().fromJson(rs.getString("json"), GameData.class);
                 if (game.isColorTaken(playerColor)) throw new DataAccessException("Error: already taken");
