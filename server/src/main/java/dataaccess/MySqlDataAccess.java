@@ -265,7 +265,6 @@ public class MySqlDataAccess implements DataAccess {
             ps.setString(4, json);
             ps.executeUpdate();
 
-
             try (var rs = ps.getGeneratedKeys()) {
                 if (rs.next()) {
                     int gameID = rs.getInt(1);
