@@ -410,6 +410,7 @@ public class MySqlDataAccess implements DataAccess {
     """,
 
 
+
     """
     CREATE TABLE IF NOT EXISTS games (
       `gameID` INT NOT NULL AUTO_INCREMENT,
