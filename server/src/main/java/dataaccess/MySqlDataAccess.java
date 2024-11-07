@@ -16,16 +16,13 @@ import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
 
 public class MySqlDataAccess implements DataAccess {
-//    private final Map<String, UserData> users = new HashMap<>();
-//    private final Map<String, GameData> games = new HashMap<>();
-//    private final Map<UUID, String> activeSessions = new HashMap<>(); // authToken to username mapping
 
     public MySqlDataAccess() throws DataAccessException {
         configureDatabase();
     }
 
     @Override
-    public void clear() throws DataAccessException, SQLException {
+    public void clear() throws DataAccessException {
         var statement = "TRUNCATE users";
         executeUpdate(statement);
         statement = "TRUNCATE games";
@@ -34,117 +31,12 @@ public class MySqlDataAccess implements DataAccess {
         executeUpdate(statement);
     }
 
-//    @Override
-//    public AuthData register(String username, String password, String email) throws DataAccessException, SQLException {
-//        if (username == null || password == null || email == null) {
-//            throw new DataAccessException("Error: missing required field");
-//        }
-//
-//        UserData user = new UserData(username, password, email);
-//
-//        if (users.containsKey(username)) {
-//            throw new DataAccessException("Error: already taken");
-//        }
-//
-//        AuthData auth;
-//        try {
-//            users.put(username, new UserData(username, password, email));
-//            auth = new AuthData(UUID.randomUUID(), username);
-//            activeSessions.put(auth.authToken(), auth.username());
-//        } catch (Exception e) {
-//            throw new DataAccessException(e.getMessage());
-//        }
-//
-//        var statement = "INSERT INTO users (username, password, email, json) VALUE (?, ?, ?)";
-//        var json = new Gson().toJson(user);
-//        executeUpdate(statement, user.username(), user.password(), user.email(), json);
-//
-//        return auth;
-//    }
-//
-//    @Override
-//    public AuthData login(String username, String password) throws DataAccessException {
-//        UserData user = users.get(username);
-//        if (user == null || !user.getPassword().equals(password)) {
-//            throw new DataAccessException("Error: unauthorized");
-//        }
-//        AuthData auth = new AuthData(UUID.randomUUID(), username);
-//        activeSessions.put(auth.authToken(), auth.username());
-//        return auth;
-//    }
-//
-//    @Override
-//    public void logout(UUID authToken) throws DataAccessException {
-//        if (!activeSessions.containsKey(authToken)) {
-//            throw new DataAccessException("Error: unauthorized");
-//        }
-//        activeSessions.remove(authToken);
-//    }
-//
-//    @Override
-//    public Collection<GameData> listGames(UUID authToken) throws DataAccessException {
-//        if (!activeSessions.containsKey(authToken)) {
-//            throw new DataAccessException("Error: unauthorized");
-////            return games.values();
-//        }
-//        return games.values();
-//    }
-//
-//    @Override
-//    public int createGame(UUID authToken, String gameName) throws DataAccessException {
-//        if (!activeSessions.containsKey(authToken)) {
-//            throw new DataAccessException("Error: unauthorized");
-//        }
-//        if (gameName == null) {
-//            throw new DataAccessException("Error: missing required field");
-//        }
-//        int gameID = games.size() + 1;
-//        games.put("game" + gameID, new GameData(gameID, null, null, gameName, new ChessGame()));
-//        return gameID;
-//    }
-//
-//    @Override
-//    public void joinGame(UUID authToken, String playerColor, int gameID) throws DataAccessException {
-//        if (!activeSessions.containsKey(authToken)) {
-//            throw new DataAccessException("Error: unauthorized");
-//        }
-//
-//        // Check if the game exists
-//        GameData game = games.get("game" + gameID);
-//        if (game == null) {
-//            throw new DataAccessException("Error: bad request");
-//        }
-//
-//        // Check if the color is already taken
-//        try {
-//            game.isColorTaken(playerColor);
-//        } catch (Exception e) {
-//            throw new DataAccessException("Error: bad request");
-//        }
-//
-//        try {
-//            if (game.isColorTaken(playerColor)) {
-//                throw new DataAccessException("Error: already taken");
-//            }
-//        } catch (Exception e) {
-//            throw new DataAccessException("Error: already taken");
-//        }
-//
-//        // Get the username associated with the auth token
-//        String username = activeSessions.get(authToken);
-//
-//        // Add the player to the game
-//        game.addPlayer(playerColor, username);
-//    }
-
-
     @Override
     public AuthData register(String username, String password, String email) throws DataAccessException, SQLException {
         if (username == null || password == null || email == null) {
             throw new DataAccessException("Error: missing required field");
         }
 
-        String salt = BCrypt.gensalt(0);
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
         UserData user = new UserData(username, hashedPassword, email);
         AuthData auth;
@@ -191,9 +83,6 @@ public class MySqlDataAccess implements DataAccess {
 
             stmt.setString(1, username);
             try (var rs = stmt.executeQuery()) {
-//                if (!rs.next() || !rs.getString("password").equals(password)) {
-//                    throw new DataAccessException("Error: unauthorized");
-//                }
 
                 if (!rs.next()) {
                     throw new DataAccessException("Error: unauthorized");
@@ -367,7 +256,7 @@ public class MySqlDataAccess implements DataAccess {
     }
 
 
-    private void executeUpdate(String statement, Object... params) throws DataAccessException, SQLException {
+    private void executeUpdate(String statement, Object... params) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 for (var i = 0; i < params.length; i++) {
