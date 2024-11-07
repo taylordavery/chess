@@ -26,7 +26,7 @@ public class Server {
     }
 
 
-    public int run(int desiredPort) throws DataAccessException{
+    public int run(int desiredPort) {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
@@ -44,12 +44,12 @@ public class Server {
         return Spark.port();
     }
 
-    public void stop() throws DataAccessException{
+    public void stop() {
         Spark.stop();
         Spark.awaitStop();
     }
 
-    private Object clear(Request req, Response res) throws DataAccessException{
+    private Object clear(Request req, Response res) {
         try {
             this.service.clear();
         } catch (Exception e) {

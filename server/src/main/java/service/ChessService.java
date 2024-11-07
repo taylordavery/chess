@@ -11,7 +11,7 @@ import java.util.UUID;
 public class ChessService {
     private final DataAccess dataAccess;
 
-    public ChessService(DataAccess dataAccess) {
+    public ChessService(DataAccess dataAccess) throws DataAccessException{
         this.dataAccess = dataAccess;
     }
 
