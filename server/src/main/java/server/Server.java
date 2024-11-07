@@ -19,10 +19,22 @@ import java.util.*;
 
 public class Server {
     public ChessService service;
-    public DataAccess dataAccess = new MySqlDataAccess();
+    public DataAccess dataAccess;
 
-    public Server() throws DataAccessException {;
-        this.service = new ChessService(dataAccess);
+    {
+        try {
+            dataAccess = new MySqlDataAccess();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Server() {;
+        try {
+            this.service = new ChessService(dataAccess);
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
