@@ -13,6 +13,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import java.sql.SQLException;
 import java.util.*;
 
 public class Server {
@@ -97,6 +98,8 @@ public class Server {
                     res.status(500);
                     return new Gson().toJson(e.getMessage());
             }
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
         }
 
         res.status(200);
@@ -151,6 +154,8 @@ public class Server {
                 Map<String, String> jsonResponse = getStringStringMap(response, g);
                 return new Gson().toJson(jsonResponse);
             }
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
         }
 
         // Wrap the games list in a JSON object
@@ -174,6 +179,8 @@ public class Server {
                 Map<String, String> jsonResponse = getStringStringMap(response, f);
                 return new Gson().toJson(jsonResponse);
             }
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
         }
         response.status(200);
         JsonObject jsonResponse = new JsonObject();

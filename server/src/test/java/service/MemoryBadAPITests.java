@@ -1,19 +1,20 @@
 package service;
 
-import dataaccess.*;
+import dataaccess.DataAccess;
+import dataaccess.DataAccessException;
+import dataaccess.MemoryDataAccess;
 import model.AuthData;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class BadAPITests {
+public class MemoryBadAPITests {
     private final DataAccess dataAccess;
     private AuthData auth;
     private int gameID;
 
-    public BadAPITests() throws DataAccessException {
-//        this.dataAccess = new MemoryDataAccess();
-        this.dataAccess = new MySqlDataAccess();
+    public MemoryBadAPITests() throws DataAccessException {
+        this.dataAccess = new MemoryDataAccess();
     }
 
     @Test

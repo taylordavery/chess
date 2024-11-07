@@ -1,17 +1,20 @@
 package service;
 
-import dataaccess.*;
+import dataaccess.DataAccess;
+import dataaccess.DataAccessException;
+import dataaccess.MemoryDataAccess;
 import model.AuthData;
 import org.junit.jupiter.api.Test;
+
 import java.sql.SQLException;
 
-public class GoodAPITests {
+public class MemoryGoodAPITests {
     private final DataAccess dataAccess;
     private AuthData auth;
     private int gameID;
 
-    public GoodAPITests() throws DataAccessException {
-        this.dataAccess = new MySqlDataAccess();
+    public MemoryGoodAPITests() throws DataAccessException {
+        this.dataAccess = new MemoryDataAccess();
     }
 
     @Test
@@ -22,35 +25,30 @@ public class GoodAPITests {
     @Test
     public void register() throws DataAccessException, SQLException {
         this.auth = dataAccess.register("username", "password", "email");
-        dataAccess.clear();
     }
 
     @Test
     public void login() throws DataAccessException, SQLException {
         this.auth = dataAccess.register("username", "password", "email");
         dataAccess.login("username", "password");
-        dataAccess.clear();
     }
 
     @Test
     public void logout() throws DataAccessException, SQLException {
         this.auth = dataAccess.register("username", "password", "email");
         dataAccess.logout(auth.authToken());
-        dataAccess.clear();
     }
 
     @Test
     public void listGames() throws DataAccessException, SQLException {
         this.auth = dataAccess.register("username", "password", "email");
         dataAccess.listGames(auth.authToken());
-        dataAccess.clear();
     }
 
     @Test
     public void createGame() throws DataAccessException, SQLException {
         this.auth = dataAccess.register("username", "password", "email");
         this.gameID = dataAccess.createGame(auth.authToken(), "gameName");
-        dataAccess.clear();
     }
 
     @Test
@@ -58,6 +56,5 @@ public class GoodAPITests {
         this.auth = dataAccess.register("username", "password", "email");
         this.gameID = dataAccess.createGame(auth.authToken(), "gameName");
         dataAccess.joinGame(auth.authToken(), "white", gameID);
-        dataAccess.clear();
     }
 }
