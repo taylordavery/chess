@@ -3,6 +3,7 @@ package server;
 import dataaccess.DataAccess;
 import dataaccess.DataAccessException;
 import dataaccess.MemoryDataAccess;
+import dataaccess.MySqlDataAccess;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -18,9 +19,9 @@ import java.util.*;
 
 public class Server {
     public ChessService service;
-    public DataAccess dataAccess = new MemoryDataAccess();
+    public DataAccess dataAccess = new MySqlDataAccess();
 
-    public Server() {;
+    public Server() throws DataAccessException {;
         this.service = new ChessService(dataAccess);
     }
 

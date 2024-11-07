@@ -82,7 +82,7 @@ public class MemoryDataAccess implements DataAccess {
             throw new DataAccessException("Error: missing required field");
         }
         int gameID = games.size() + 1;
-        games.put("game" + gameID, new GameData(gameID, null, null, gameName, new ChessGame()));
+        games.put("game" + gameID, new GameData(null, null, gameName, new ChessGame()));
         return gameID;
     }
 

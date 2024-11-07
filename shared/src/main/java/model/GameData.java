@@ -3,14 +3,14 @@ package model;
 import chess.ChessGame;
 
 public class GameData {
-    private final int gameID;
+//    private final int gameID;
     private String whiteUsername;
     private String blackUsername;
     private final String gameName;
     private final ChessGame game;
 
-    public GameData(int gameID, String whiteUsername, String blackUsername, String gameName, ChessGame game) {
-        this.gameID = gameID;
+    public GameData(String whiteUsername, String blackUsername, String gameName, ChessGame game) {
+//        this.gameID = 0;
         this.whiteUsername = whiteUsername;
         this.blackUsername = blackUsername;
         this.gameName = gameName;
@@ -35,10 +35,10 @@ public class GameData {
         }
     }
 
-    // Getters for fields (optional)
-    public int getGameID() {
-        return gameID;
-    }
+//    // Getters for fields
+//    public int getGameID() {
+//        return gameID;
+//    }
 
     public String getWhiteUsername() {
         return whiteUsername;

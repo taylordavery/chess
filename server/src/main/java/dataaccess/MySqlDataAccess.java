@@ -252,7 +252,7 @@ public class MySqlDataAccess implements DataAccess {
             throw new DataAccessException("Error: missing required field");
         }
 
-        GameData gameData = new GameData(0, null, null, gameName, new ChessGame());
+        GameData gameData = new GameData(null, null, gameName, new ChessGame());
         String json = new Gson().toJson(gameData);
 
         try (var conn = DatabaseManager.getConnection();
@@ -293,7 +293,7 @@ public class MySqlDataAccess implements DataAccess {
                 if (!rs.next()) throw new DataAccessException("Error: game not found");
 
                 GameData game = new Gson().fromJson(rs.getString("json"), GameData.class);
-                if (game.isColorTaken(playerColor)) throw new DataAccessException("Error: color already taken");
+                if (game.isColorTaken(playerColor)) throw new DataAccessException("Error: already taken");
 
                 game.addPlayer(playerColor, username);
                 updateGame.setString(1, new Gson().toJson(game));
@@ -341,26 +341,29 @@ public class MySqlDataAccess implements DataAccess {
     }
 
 
-    private int executeUpdate(String statement, Object... params) throws DataAccessException, SQLException {
+    private void executeUpdate(String statement, Object... params) throws DataAccessException, SQLException {
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 for (var i = 0; i < params.length; i++) {
                     var param = params[i];
-                    if (param instanceof String p) ps.setString(i + 1, p);
-                    else if (param instanceof Integer p) ps.setInt(i + 1, p);
-                    else if (param instanceof UserData p) ps.setString(i + 1, p.toString());
-                    else if (param instanceof GameData p) ps.setString(i + 1, p.toString());
-                    else if (param instanceof AuthData p) ps.setString(i + 1, p.toString());
-                    else if (param == null) ps.setNull(i + 1, NULL);
+                    switch (param) {
+                        case String p -> ps.setString(i + 1, p);
+                        case Integer p -> ps.setInt(i + 1, p);
+                        case UserData p -> ps.setString(i + 1, p.toString());
+                        case GameData p -> ps.setString(i + 1, p.toString());
+                        case AuthData p -> ps.setString(i + 1, p.toString());
+                        case null -> ps.setNull(i + 1, NULL);
+                        default -> {
+                        }
+                    }
                 }
                 ps.executeUpdate();
 
                 var rs = ps.getGeneratedKeys();
                 if (rs.next()) {
-                    return rs.getInt(1);
+                    rs.getInt(1);
                 }
 
-                return 0;
             }
         } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
