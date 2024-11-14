@@ -4,8 +4,7 @@ import com.google.gson.Gson;
 import exception.ResponseException;
 import model.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.io.*;
 import java.net.*;
 
@@ -33,6 +32,36 @@ public class ServerFacade {
         return this.makeRequest("POST", path, userData, AuthData.class);
     }
 
+    public AuthData login(String username, String password) throws ResponseException {
+        var path = "/session";
+        Map<String, String> userData = new HashMap<>();
+        userData.put("username", username);
+        userData.put("password", password);
+        return this.makeRequest("POST", path, userData, AuthData.class);
+    }
+
+    public void logout(UUID authToken) throws ResponseException {
+        var path = "/session";
+        this.makeRequest("DELETE", path, authToken, null);
+    }
+
+    public Collection<GameData> listGames(UUID authToken) throws ResponseException {
+        var path = "/game";
+        GameData[] gameDataArray = this.makeRequest("GET", path, authToken, GameData[].class);
+        return List.of(gameDataArray);
+    }
+
+    public int createGame(UUID authToken, String gameName) throws ResponseException {
+        var path = "/game";
+        Map<String, Object> userData = new HashMap<>();
+        userData.put("authToken", authToken);
+        userData.put("gameName", gameName);
+        return this.makeRequest("POST", path, userData, int.class);
+    }
+
+    public void  joinGame(UUID authToken, String playerColor, int gameID) throws ResponseException {
+        dataAccess.joinGame(authToken, playerColor, gameID);
+    }
 
 
     public Pet addPet(Pet pet) throws ResponseException {
