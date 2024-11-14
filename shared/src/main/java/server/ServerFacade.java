@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import exception.ResponseException;
 import model.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.io.*;
 import java.net.*;
 
@@ -14,6 +16,23 @@ public class ServerFacade {
     public ServerFacade(String url) {
         serverUrl = url;
     }
+
+    public void clear() throws ResponseException {
+        var path = "/db";
+        this.makeRequest("DELETE", path, null, null);
+    }
+
+    public AuthData register(String username, String password, String email) throws ResponseException {
+        var path = "/user";
+
+        Map<String, String> userData = new HashMap<>();
+        userData.put("username", username);
+        userData.put("password", password);
+        userData.put("email", email);
+
+        return this.makeRequest("POST", path, userData, AuthData.class);
+    }
+
 
 
     public Pet addPet(Pet pet) throws ResponseException {
