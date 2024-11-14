@@ -14,6 +14,7 @@ public class ServerFacade {
 
     public ServerFacade(String url) {
         serverUrl = url;
+
     }
 
     public void clear() throws ResponseException {
