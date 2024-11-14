@@ -60,7 +60,12 @@ public class ServerFacade {
     }
 
     public void  joinGame(UUID authToken, String playerColor, int gameID) throws ResponseException {
-        dataAccess.joinGame(authToken, playerColor, gameID);
+        var path = "/game";
+        Map<String, Object> userData = new HashMap<>();
+        userData.put("authToken", authToken);
+        userData.put("playerColor", playerColor);
+        userData.put("gameID", gameID);
+        this.makeRequest("PUT", path, userData, null);
     }
 
 
