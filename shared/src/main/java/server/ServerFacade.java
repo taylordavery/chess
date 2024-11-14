@@ -45,10 +45,11 @@ public class ServerFacade {
         this.makeRequest("DELETE", path, authToken, null);
     }
 
-    public Collection<GameData> listGames(UUID authToken) throws ResponseException {
+    public GameData[] listGames(UUID authToken) throws ResponseException {
         var path = "/game";
-        GameData[] gameDataArray = this.makeRequest("GET", path, authToken, GameData[].class);
-        return List.of(gameDataArray);
+        record listGameDataResponse(GameData[] games) {}
+        var response = this.makeRequest("GET", path, null, listGameDataResponse.class);
+        return response.games;
     }
 
     public int createGame(UUID authToken, String gameName) throws ResponseException {
@@ -66,30 +67,6 @@ public class ServerFacade {
         userData.put("playerColor", playerColor);
         userData.put("gameID", gameID);
         this.makeRequest("PUT", path, userData, null);
-    }
-
-
-    public Pet addPet(Pet pet) throws ResponseException {
-        var path = "/pet";
-        return this.makeRequest("POST", path, pet, Pet.class);
-    }
-
-    public void deletePet(int id) throws ResponseException {
-        var path = String.format("/pet/%s", id);
-        this.makeRequest("DELETE", path, null, null);
-    }
-
-    public void deleteAllPets() throws ResponseException {
-        var path = "/pet";
-        this.makeRequest("DELETE", path, null, null);
-    }
-
-    public Pet[] listPets() throws ResponseException {
-        var path = "/pet";
-        record listPetResponse(Pet[] pet) {
-        }
-        var response = this.makeRequest("GET", path, null, listPetResponse.class);
-        return response.pet();
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
