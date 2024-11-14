@@ -4,24 +4,23 @@ package ui;
 import java.util.Arrays;
 
 import com.google.gson.Gson;
-import model.*;
 import exception.ResponseException;
 //import client.websocket.NotificationHandler;
 import server.ServerFacade;
 //import client.websocket.WebSocketFacade;
 
 public class PreLoginClient {
-    private String visitorName = null;
+//    private String visitorName = null;
     private final ServerFacade server;
     private final String serverUrl;
-    private final NotificationHandler notificationHandler;
-    private WebSocketFacade ws;
-    private State state = State.SIGNEDOUT;
+//    private final NotificationHandler notificationHandler;
+//    private WebSocketFacade ws;
+//    private State state = State.SIGNEDOUT;
 
-    public PetClient(String serverUrl, NotificationHandler notificationHandler) {
+    public PreLoginClient(String serverUrl, Repl repl) {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
-        this.notificationHandler = notificationHandler;
+//        this.notificationHandler = notificationHandler;
     }
 
     public String eval(String input) {
@@ -30,8 +29,8 @@ public class PreLoginClient {
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
-                case "signin" -> signIn(params);
-                case "rescue" -> rescuePet(params);
+                case "clear" -> clear();
+                case "register" -> register(params);
                 case "list" -> listPets();
                 case "signout" -> signOut();
                 case "adopt" -> adoptPet(params);
@@ -42,6 +41,21 @@ public class PreLoginClient {
         } catch (ResponseException ex) {
             return ex.getMessage();
         }
+    }
+
+    public String clear() throws ResponseException {
+        server.clear();
+        return "Database has been cleared.";
+    }
+
+    public String register(String... params) throws ResponseException {
+        if (params.length >= 1) {
+//            ws = new WebSocketFacade(serverUrl, notificationHandler);
+//            ws.enterPetShop(visitorName);
+            server.register(params[0], params[1], params[2]);
+            return String.format("Account create.\nYou are signed in as %s.", params[0]);
+        }
+        throw new ResponseException(400, "Expected: <username> <password> <email>");
     }
 
     public String signIn(String... params) throws ResponseException {
@@ -123,25 +137,11 @@ public class PreLoginClient {
     }
 
     public String help() {
-        if (state == State.SIGNEDOUT) {
-            return """
-                    - signIn <yourname>
-                    - quit
-                    """;
-        }
         return """
-                - list
-                - adopt <pet id>
-                - rescue <name> <CAT|DOG|FROG|FISH>
-                - adoptAll
-                - signOut
+                - clear
+                - register <username> <password> <email>
+                - login <username> <password>
                 - quit
                 """;
-    }
-
-    private void assertSignedIn() throws ResponseException {
-        if (state == State.SIGNEDOUT) {
-            throw new ResponseException(400, "You must sign in");
-        }
     }
 }
