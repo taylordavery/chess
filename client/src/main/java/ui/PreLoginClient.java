@@ -50,10 +50,12 @@ public class PreLoginClient implements Client{
 //            ws = new WebSocketFacade(serverUrl, notificationHandler);
 //            ws.enterPetShop(visitorName);
             var auth = server.register(params[0], params[1], params[2]);
-            System.out.printf("Account created.\nYou are signed in as %s.", params[0]);
+            System.out.printf("Account created.\nYou are signed in as %s.\n", params[0]);
             new Repl(new PostLoginClient(serverUrl, auth)).run();
-        }
+        } else {
         throw new ResponseException(400, "Expected: <username> <password> <email>");
+        }
+        return "";
     }
 
     public String login(String... params) throws ResponseException {
@@ -63,8 +65,10 @@ public class PreLoginClient implements Client{
             var auth = server.login(params[0], params[1]);
             System.out.printf("You signed in as %s.", params[0]);
             new Repl(new PostLoginClient(serverUrl, auth)).run();
-        }
+        } else {
         throw new ResponseException(400, "Expected: <username> <password>");
+    }
+        return "";
     }
 
     public String help() {

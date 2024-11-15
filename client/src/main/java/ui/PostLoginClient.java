@@ -32,10 +32,10 @@ public class PostLoginClient implements Client{
             return switch (cmd) {
                 case "clear" -> clear();
                 case "logout" -> logout();
-                case "listGames" -> listGames();
-                case "createGame" -> createGame(params);
-                case "joinGame" -> joinGame(params);
-//                case "quit" -> "quit";
+                case "list" -> listGames();
+                case "create" -> createGame(params);
+                case "join" -> joinGame(params);
+                case "quit" -> "quit";
                 default -> help();
             };
         } catch (ResponseException ex) {
@@ -43,9 +43,20 @@ public class PostLoginClient implements Client{
         }
     }
 
-    private String listGames() throws ResponseException {
-        var games = server.listGames(auth.authToken());
+    private String joinGame(String[] params) throws ResponseException {
+        server.joinGame(auth.authToken(), params[0], Integer.parseInt(params[1]));
+        return String.format("You joined game %s as %s", params[1], params[0]);
+    }
 
+    private String createGame(String[] params) throws ResponseException {
+        var gameID = server.createGame(auth.authToken(), params[0]);
+        return String.format("You created a chess game named %s. GameID: %s", params[0], gameID);
+    }
+
+    private String listGames() throws ResponseException {
+        var gamesList = Arrays.toString(server.listGames(auth.authToken()));
+        System.out.println(gamesList); // For debugging
+        return gamesList;
     }
 
     private String logout() throws ResponseException {
@@ -70,27 +81,17 @@ public class PostLoginClient implements Client{
         throw new ResponseException(400, "Expected: <username> <password> <email>");
     }
 
-    public String login(String... params) throws ResponseException {
-        if (params.length >= 1) {
-//            ws = new WebSocketFacade(serverUrl, notificationHandler);
-//            ws.enterPetShop(visitorName);
-            server.login(params[0], params[1]);
-            System.out.printf("You signed in as %s.", params[0]);
-            new Repl(new PostLoginClient(serverUrl, auth)).run();
-        }
-        throw new ResponseException(400, "Expected: <username> <password>");
-    }
-
     public String help() {
         return """
                 - clear
-                - register <username> <password> <email>
-                - login <username> <password>
-                - quit
+                - logout
+                - list
+                - create <gameName>
+                - join <gameID>
                 """;
     }
 
     public String startMsg() {
-        return "Welcome to Chess. Sign in to start.";
+        return "";
     }
 }

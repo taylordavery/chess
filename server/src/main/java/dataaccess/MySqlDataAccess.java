@@ -113,9 +113,10 @@ public class MySqlDataAccess implements DataAccess {
 
     @Override
     public void logout(UUID authToken) throws DataAccessException {
+
+        System.out.println(authToken.toString());
         try (var conn = DatabaseManager.getConnection();
              var ps = conn.prepareStatement("DELETE FROM activeSessions WHERE authToken = ?")) {
-
             ps.setString(1, authToken.toString());
             if (ps.executeUpdate() == 0) {
                 throw new DataAccessException("Error: unauthorized");
