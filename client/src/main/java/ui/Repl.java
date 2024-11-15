@@ -5,7 +5,6 @@ package ui;
 
 import java.util.Scanner;
 
-import static com.sun.org.apache.xalan.internal.xsltc.compiler.Constants.RESET;
 import static java.awt.Color.*;
 import static ui.EscapeSequences.*;
 
