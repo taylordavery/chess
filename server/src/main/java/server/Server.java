@@ -2,7 +2,6 @@ package server;
 
 import dataaccess.DataAccess;
 import dataaccess.DataAccessException;
-import dataaccess.MemoryDataAccess;
 import dataaccess.MySqlDataAccess;
 import model.AuthData;
 import model.GameData;

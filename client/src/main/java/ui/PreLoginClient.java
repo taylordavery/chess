@@ -32,7 +32,7 @@ public class PreLoginClient implements Client{
                 case "clear" -> clear();
                 case "register" -> register(params);
                 case "login" -> login(params);
-                case "quit" -> "quit";
+                case "quit" -> "%quit%";
                 default -> help();
             };
         } catch (ResponseException ex) {

@@ -17,6 +17,10 @@ public class GameData {
         this.game = game;
     }
 
+    public String toString() {
+        return this.gameName;
+    }
+
     public boolean isColorTaken(String playerColor) throws Exception {
         if (playerColor.equalsIgnoreCase("black")) {
             return blackUsername != null;

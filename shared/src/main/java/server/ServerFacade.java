@@ -18,7 +18,7 @@ public class ServerFacade {
 
     public void clear() throws ResponseException {
         var path = "/db";
-        this.makeRequest("DELETE", path, null, null);
+        this.makeRequest("DELETE", path, null, null, null);
     }
 
     public AuthData register(String username, String password, String email) throws ResponseException {
@@ -29,7 +29,7 @@ public class ServerFacade {
         userData.put("password", password);
         userData.put("email", email);
 
-        return this.makeRequest("POST", path, userData, AuthData.class);
+        return this.makeRequest("POST", path, userData, AuthData.class, null);
     }
 
     public AuthData login(String username, String password) throws ResponseException {
@@ -37,45 +37,54 @@ public class ServerFacade {
         Map<String, String> userData = new HashMap<>();
         userData.put("username", username);
         userData.put("password", password);
-        return this.makeRequest("POST", path, userData, AuthData.class);
+        return this.makeRequest("POST", path, userData, AuthData.class, null);
     }
 
     public void logout(UUID authToken) throws ResponseException {
         var path = "/session";
-        this.makeRequest("DELETE", path, authToken, null);
+        Map<String, String> headers = new HashMap<>();
+        headers.put("authorization", authToken.toString());
+        this.makeRequest("DELETE", path, null, null, headers);
     }
+
 
     public GameData[] listGames(UUID authToken) throws ResponseException {
         var path = "/game";
         record listGameDataResponse(GameData[] games) {}
-        var response = this.makeRequest("GET", path, null, listGameDataResponse.class);
+        Map<String, String> headers = new HashMap<>();
+        headers.put("authorization", authToken.toString());
+        var response = this.makeRequest("GET", path, null, listGameDataResponse.class, headers);
         return response.games;
     }
 
     public int createGame(UUID authToken, String gameName) throws ResponseException {
         var path = "/game";
-        Map<String, Object> userData = new HashMap<>();
-        userData.put("authToken", authToken);
-        userData.put("gameName", gameName);
-        return this.makeRequest("POST", path, userData, int.class);
+        Map<String, Object> body = new HashMap<>();
+        Map<String, String> headers = new HashMap<>();
+        headers.put("authorization", authToken.toString());
+        body.put("gameName", gameName);
+
+        return this.makeRequest("POST", path, body, int.class, headers);
+
     }
 
-    public void  joinGame(UUID authToken, String playerColor, int gameID) throws ResponseException {
+    public void  joinGame(UUID authToken, int gameID, String playerColor) throws ResponseException {
         var path = "/game";
         Map<String, Object> userData = new HashMap<>();
-        userData.put("authToken", authToken);
+        Map<String, String> headers = new HashMap<>();
+        headers.put("authorization", authToken.toString());
         userData.put("playerColor", playerColor);
         userData.put("gameID", gameID);
-        this.makeRequest("PUT", path, userData, null);
+        this.makeRequest("PUT", path, userData, null, headers);
     }
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
+    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, Map<String, String> headers) throws ResponseException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
-
+            writeHeaders(headers, http);
             writeBody(request, http);
             http.connect();
             throwIfNotSuccessful(http);
@@ -95,6 +104,15 @@ public class ServerFacade {
             }
         }
     }
+
+    private static void writeHeaders(Map<String, String> headers, HttpURLConnection http) {
+        if (headers != null) {
+            for (Map.Entry<String, String> entry : headers.entrySet()) {
+                http.setRequestProperty(entry.getKey(), entry.getValue());
+            }
+        }
+    }
+
 
     private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ResponseException {
         var status = http.getResponseCode();

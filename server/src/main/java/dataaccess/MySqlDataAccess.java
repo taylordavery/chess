@@ -208,16 +208,20 @@ public class MySqlDataAccess implements DataAccess {
                     throw new DataAccessException("Error: game not found");
                 }
 
-                if (playerColor == null) {
-                    throw new DataAccessException("Error: bad request");
-                }
-
                 GameData game = new Gson().fromJson(rs.getString("json"), GameData.class);
-                if (game.isColorTaken(playerColor)) {
-                    throw new DataAccessException("Error: already taken");
+
+                if (playerColor != null) {
+                    if (!playerColor.equals("white")) {
+                        if (!playerColor.equals("black")) {
+                            throw new DataAccessException("Error: bad request");
+                        }
+                    }
+                    if (game.isColorTaken(playerColor)) {
+                        throw new DataAccessException("Error: already taken");
+                    }
+                    game.addPlayer(playerColor, username);
                 }
 
-                game.addPlayer(playerColor, username);
                 updateGame.setString(1, new Gson().toJson(game));
                 updateGame.setInt(2, gameID);
                 updateGame.executeUpdate();

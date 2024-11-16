@@ -35,7 +35,7 @@ public class PostLoginClient implements Client{
                 case "list" -> listGames();
                 case "create" -> createGame(params);
                 case "join" -> joinGame(params);
-                case "quit" -> "quit";
+                case "%quit%" -> "%quit%";
                 default -> help();
             };
         } catch (ResponseException ex) {
@@ -44,8 +44,13 @@ public class PostLoginClient implements Client{
     }
 
     private String joinGame(String[] params) throws ResponseException {
-        server.joinGame(auth.authToken(), params[0], Integer.parseInt(params[1]));
-        return String.format("You joined game %s as %s", params[1], params[0]);
+        if (params.length > 1) {
+            server.joinGame(auth.authToken(), Integer.parseInt(params[0]), params[1]);
+            return String.format("You joined game %s as %s", params[0], params[1]);
+        } else {
+            server.joinGame(auth.authToken(), Integer.parseInt(params[0]), null);
+            return String.format("You joined game %s as Observer", params[0]);
+        }
     }
 
     private String createGame(String[] params) throws ResponseException {
@@ -62,7 +67,7 @@ public class PostLoginClient implements Client{
     private String logout() throws ResponseException {
         server.logout(auth.authToken());
         System.out.println("You logged out.");
-        return "quit";
+        return "%quit%";
     }
 
     public String clear() throws ResponseException {

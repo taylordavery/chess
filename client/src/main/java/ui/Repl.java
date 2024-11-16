@@ -22,12 +22,12 @@ public class Repl {
 
         Scanner scanner = new Scanner(System.in);
         var result = "";
-        while (!result.equals("quit")) {
+        while (!result.equals("%quit%")) {
             String line = scanner.nextLine();
 
             try {
                 result = client.eval(line);
-                if (!result.equals("quit")) {  // Avoid printing "quit" when exiting
+                if (!result.equals("%quit%")) {  // Avoid printing "quit" when exiting
                     System.out.print(result + "\n");
                 }
             } catch (Throwable e) {
