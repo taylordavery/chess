@@ -3,9 +3,12 @@ package ui;
 
 import exception.ResponseException;
 import model.AuthData;
+import model.GameData;
 import server.ServerFacade;
 
 import java.util.Arrays;
+
+import static ui.EscapeSequences.*;
 //import client.websocket.WebSocketFacade;
 
 public class PostLoginClient implements Client{
@@ -54,15 +57,59 @@ public class PostLoginClient implements Client{
     }
 
     private String createGame(String[] params) throws ResponseException {
-        var gameID = server.createGame(auth.authToken(), params[0]);
-        return String.format("You created a chess game named %s. GameID: %s", params[0], gameID);
+        server.createGame(auth.authToken(), params[0]);
+        return String.format("You created a chess game named %s.", params[0]);
     }
 
     private String listGames() throws ResponseException {
-        var gamesList = Arrays.toString(server.listGames(auth.authToken()));
-        System.out.println(gamesList); // For debugging
-        return gamesList;
+        GameData[] games = server.listGames(auth.authToken());
+        StringBuilder result = new StringBuilder();
+
+        // Determine column widths dynamically
+        int maxGameNameLength = Arrays.stream(games)
+                .mapToInt(game -> game.getGameName().length())
+                .max()
+                .orElse(10);
+        int usernameColumnWidth = 10; // Fixed width for usernames
+
+        // Format each game entry
+        for (int i = 0; i < games.length; i++) {
+            var white = games[i].getWhiteUsername() != null ? games[i].getWhiteUsername() : "";
+            var black = games[i].getBlackUsername() != null ? games[i].getBlackUsername() : "";
+
+            // Adjust usernames for the column width
+            white = formatText(white, usernameColumnWidth);
+            black = formatText(black, usernameColumnWidth);
+
+            result.append(String.format(
+                    "%-3d %-"+ maxGameNameLength +"s %s[%-"+ usernameColumnWidth +"s]%s %s[%-"+ usernameColumnWidth +"s]%s%n",
+                    i + 1,                                   // Row number
+                    games[i].getGameName(),                 // Game name
+                    SET_BG_COLOR_WHITE + SET_TEXT_COLOR_BLACK, white, RESET_TEXT_COLOR + RESET_BG_COLOR, // White username
+                    SET_BG_COLOR_BLACK + SET_TEXT_COLOR_WHITE, black, RESET_TEXT_COLOR + RESET_BG_COLOR  // Black username
+            ));
+        }
+
+        return result.toString();
     }
+
+    // Helper method to format text for the column
+    private static String formatText(String text, int width) {
+        if (text.length() > width) {
+            // Truncate
+            return text.substring(0, width);
+        }
+        // Center text within the column
+        int padding = width - text.length();
+        int padStart = padding / 2;
+        int padEnd = padding - padStart;
+        return " ".repeat(padStart) + text + " ".repeat(padEnd);
+    }
+
+
+
+
+
 
     private String logout() throws ResponseException {
         server.logout(auth.authToken());

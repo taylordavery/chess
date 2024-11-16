@@ -57,15 +57,18 @@ public class ServerFacade {
         return response.games;
     }
 
-    public int createGame(UUID authToken, String gameName) throws ResponseException {
+    public void createGame(UUID authToken, String gameName) throws ResponseException {
         var path = "/game";
         Map<String, Object> body = new HashMap<>();
         Map<String, String> headers = new HashMap<>();
         headers.put("authorization", authToken.toString());
         body.put("gameName", gameName);
+        class GameCreationResponse {
+            int gameId;
+        }
 
-        return this.makeRequest("POST", path, body, int.class, headers);
-
+        var response = this.makeRequest("POST", path, body, GameCreationResponse.class, headers);
+//        return response.gameId;
     }
 
     public void  joinGame(UUID authToken, int gameID, String playerColor) throws ResponseException {

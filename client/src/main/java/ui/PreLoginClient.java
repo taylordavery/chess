@@ -52,6 +52,7 @@ public class PreLoginClient implements Client{
             var auth = server.register(params[0], params[1], params[2]);
             System.out.printf("Account created.\nYou are signed in as %s.\n", params[0]);
             new Repl(new PostLoginClient(serverUrl, auth)).run();
+            this.help();
         } else {
         throw new ResponseException(400, "Expected: <username> <password> <email>");
         }
@@ -65,6 +66,7 @@ public class PreLoginClient implements Client{
             var auth = server.login(params[0], params[1]);
             System.out.printf("You signed in as %s.", params[0]);
             new Repl(new PostLoginClient(serverUrl, auth)).run();
+            System.out.println(this.help());
         } else {
         throw new ResponseException(400, "Expected: <username> <password>");
     }
