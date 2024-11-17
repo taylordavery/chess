@@ -1,4 +1,4 @@
-package ServerFacadePackage;
+package ServerFacade;
 
 import chess.ChessGame;
 import com.google.gson.Gson;

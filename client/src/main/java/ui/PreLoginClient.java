@@ -5,7 +5,7 @@ import java.util.Arrays;
 
 import exception.ResponseException;
 //import client.websocket.NotificationHandler;
-import ServerFacadePackage.ServerFacade;
+import ServerFacade.ServerFacade;
 //import client.websocket.WebSocketFacade;
 
 public class PreLoginClient implements Client{

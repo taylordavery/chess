@@ -5,7 +5,7 @@ import chess.ChessGame;
 import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
-import ServerFacadePackage.ServerFacade;
+import ServerFacade.ServerFacade;
 
 import java.util.Arrays;
 import java.util.Objects;

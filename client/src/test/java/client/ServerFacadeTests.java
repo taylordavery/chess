@@ -6,7 +6,7 @@ import model.AuthData;
 import model.GameData;
 import org.junit.jupiter.api.*;
 import server.Server;
-import ServerFacadePackage.ServerFacade;
+import ServerFacade.ServerFacade;
 
 import java.util.UUID;
 
