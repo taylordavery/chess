@@ -56,7 +56,7 @@ public class PreLoginClient implements Client{
         } else {
         throw new ResponseException(400, "Expected: <username> <password> <email>");
         }
-        return "";
+        return this.help();
     }
 
     public String login(String... params) throws ResponseException {

@@ -50,11 +50,60 @@ public class Server {
         Spark.get("/game", this::listGames);
         Spark.post("/game", this::createGame);
         Spark.put("/game", this::joinGame);
+        Spark.put("/observe", this::observeGame);
         Spark.get("/board", this::getGame);
 
         Spark.init();
         Spark.awaitInitialization();
         return Spark.port();
+    }
+
+    private Object observeGame(Request request, Response response) {
+        UUID authToken;
+        try {
+            authToken = new Gson().fromJson(request.headers("authorization"), UUID.class);
+        } catch (Exception e) {
+            response.status(401);
+            Map<String, String> jsonResponse = new HashMap<>();
+            jsonResponse.put("message", "Error: unauthorized");
+            return new Gson().toJson(jsonResponse);
+        }
+        JsonObject body = JsonParser.parseString(request.body()).getAsJsonObject();
+
+
+        int gameID;
+        if (body.get("gameID") != null) {
+            gameID = body.get("gameID").getAsInt();
+        } else {
+            response.status(400);
+            Map<String, String> jsonResponse = new HashMap<>();
+            jsonResponse.put("message", "Error: bad request");
+            return new Gson().toJson(jsonResponse);
+        }
+
+        try {
+            this.service.joinGame(authToken, null, gameID);
+        } catch (Exception e) {
+            // Map exception messages to status codes
+            Map<String, Integer> statusCodes = new HashMap<>();
+            statusCodes.put("Error: bad request", 400);
+//            statusCodes.put("Name is null", 400);
+            statusCodes.put("Error: unauthorized", 401);
+            statusCodes.put("Error: already taken", 403);
+
+            int statusCode = statusCodes.getOrDefault(e.getMessage(), 500);
+            response.status(statusCode);
+
+            // Return JSON error message
+            Map<String, String> jsonResponse = new HashMap<>();
+            jsonResponse.put("message", e.getMessage());
+
+            return new Gson().toJson(jsonResponse);
+        }
+
+        // Success status
+        response.status(200);
+        return "";
     }
 
     private Object getGame(Request request, Response response) throws DataAccessException {
@@ -266,9 +315,17 @@ public class Server {
         JsonObject body = JsonParser.parseString(request.body()).getAsJsonObject();
 
         // Check if playerColor is present and not null
-        String playerColor = body.has("playerColor") && !body.get("playerColor").isJsonNull()
-                ? body.get("playerColor").getAsString()
-                : null;
+        ChessGame.TeamColor playerColor = null;
+        if (body.has("playerColor") && !body.get("playerColor").isJsonNull()) {
+            String colorString = body.get("playerColor").getAsString(); // Extract the string value
+            playerColor = ChessGame.TeamColor.valueOf(colorString.toUpperCase()); // Convert to TeamColor (case-insensitive)
+        } else {
+            response.status(400);
+            Map<String, String> jsonResponse = new HashMap<>();
+            jsonResponse.put("message", "Error: bad request");
+            return new Gson().toJson(jsonResponse);
+        }
+
 
         int gameID;
         if (body.get("gameID") != null) {
@@ -279,13 +336,23 @@ public class Server {
             jsonResponse.put("message", "Error: bad request");
             return new Gson().toJson(jsonResponse);
         }
+        
+        ChessGame.TeamColor playerTeamColor = null;
+        
+        if (Objects.equals(playerColor, "black")) {
+            playerTeamColor = ChessGame.TeamColor.BLACK;
+        }
+        if (Objects.equals(playerColor, "white")) {
+            playerTeamColor = ChessGame.TeamColor.WHITE;
+        }
 
         try {
-            this.service.joinGame(authToken, ChessGame.TeamColor.valueOf(playerColor), gameID);
+            this.service.joinGame(authToken, playerColor, gameID);
         } catch (Exception e) {
             // Map exception messages to status codes
             Map<String, Integer> statusCodes = new HashMap<>();
             statusCodes.put("Error: bad request", 400);
+//            statusCodes.put("Name is null", 400);
             statusCodes.put("Error: unauthorized", 401);
             statusCodes.put("Error: already taken", 403);
 

@@ -9,6 +9,7 @@ import model.GameData;
 import server.ServerFacade;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import static ui.EscapeSequences.*;
 //import client.websocket.WebSocketFacade;
@@ -39,6 +40,7 @@ public class PostLoginClient implements Client{
                 case "list" -> listGames();
                 case "create" -> createGame(params);
                 case "join" -> joinGame(params);
+                case "observe" -> observeGame(params);
                 case "%quit%" -> "%quit%";
                 default -> help();
             };
@@ -47,16 +49,25 @@ public class PostLoginClient implements Client{
         }
     }
 
+    private String observeGame(String[] params) throws ResponseException {
+        if (params.length == 1) {
+            var game = new ChessGame().getBoard().toString();
+            server.observeGame(auth.authToken(), Integer.parseInt(params[0]));
+            System.out.printf("You joined game %s as Observer\n", params[0]);
+            new Repl(new GameplayClient(serverUrl, auth, game)).run(); //I'll need to add a game parameter here or something.
+        }
+        return this.help();
+    }
+
     private String joinGame(String[] params) throws ResponseException {
         if (params.length > 1) {
             var game = new ChessGame().getBoard().toString();
-            server.joinGame(auth.authToken(), params[1], Integer.parseInt(params[0]));
+
+            var teamColor = Objects.equals(params[1], "white") ? ChessGame.TeamColor.WHITE :
+                    Objects.equals(params[1], "black") ? ChessGame.TeamColor.BLACK : null;
+
+            server.joinGame(auth.authToken(), teamColor, Integer.parseInt(params[0]));
             System.out.printf("You joined game %s as %s\n", params[0], params[1]);
-            new Repl(new GameplayClient(serverUrl, auth, game)).run(); //I'll need to add a game parameter here or something.
-        } else {
-            var game = new ChessGame().getBoard().toString();
-            server.joinGame(auth.authToken(), null, Integer.parseInt(params[0]));
-            System.out.printf("You joined game %s as Observer\n", params[0]);
             new Repl(new GameplayClient(serverUrl, auth, game)).run(); //I'll need to add a game parameter here or something.
         }
         return this.help();
@@ -123,7 +134,8 @@ public class PostLoginClient implements Client{
                 - logout
                 - list
                 - create <gameName>
-                - join <gameNumber>
+                - join <gameNumber> <white/black>
+                - observe <gameNumber>
                 """;
     }
 

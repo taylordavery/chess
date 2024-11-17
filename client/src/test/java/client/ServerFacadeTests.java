@@ -1,5 +1,6 @@
 package client;
 
+import chess.ChessGame;
 import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
@@ -103,8 +104,7 @@ public class ServerFacadeTests {
     void createGame_positive() {
         assertDoesNotThrow(() -> {
             AuthData auth = serverFacade.register("testUser5", "password", "test5@example.com");
-            int gameId = serverFacade.createGame(auth.authToken(), "Test Game");
-            assertTrue(gameId > 0);
+            serverFacade.createGame(auth.authToken(), "Test Game");
         });
     }
 
@@ -119,15 +119,15 @@ public class ServerFacadeTests {
     void joinGame_positive() {
         assertDoesNotThrow(() -> {
             AuthData auth = serverFacade.register("testUser6", "password", "test6@example.com");
-            int gameId = serverFacade.createGame(auth.authToken(), "Test Game 2");
-            serverFacade.joinGame(auth.authToken(), "white", gameId);
+            serverFacade.createGame(auth.authToken(), "Test Game 2");
+            serverFacade.joinGame(auth.authToken(), ChessGame.TeamColor.WHITE, 1);
         });
     }
 
     @Test
     void joinGame_negative() {
         assertThrows(ResponseException.class, () -> {
-            serverFacade.joinGame(UUID.randomUUID(), "invalidColor", -1); // Invalid inputs
+            serverFacade.joinGame(UUID.randomUUID(), null, -1); // Invalid inputs
         });
     }
 }

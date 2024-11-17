@@ -1,5 +1,6 @@
 package server;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import model.*;
@@ -71,7 +72,7 @@ public class ServerFacade {
 //        return response.gameId;
     }
 
-    public void joinGame(UUID authToken, String playerColor, int gameID) throws ResponseException {
+    public void joinGame(UUID authToken, ChessGame.TeamColor playerColor, int gameID) throws ResponseException {
         var path = "/game";
         Map<String, Object> userData = new HashMap<>();
         Map<String, String> headers = new HashMap<>();
@@ -149,5 +150,14 @@ public class ServerFacade {
         headers.put("authorization", authToken.toString());
         body.put("gameID", gameID);
         return this.makeRequest("GET", path, body, GameData.class, headers);
+    }
+
+    public void observeGame(UUID authToken, int gameID) throws ResponseException {
+        var path = "/observe";
+        Map<String, Object> userData = new HashMap<>();
+        Map<String, String> headers = new HashMap<>();
+        headers.put("authorization", authToken.toString());
+        userData.put("gameID", gameID);
+        this.makeRequest("PUT", path, userData, null, headers);
     }
 }
