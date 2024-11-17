@@ -90,7 +90,8 @@ public class ServerFacade {
         this.makeRequest("PUT", path, userData, null, headers);
     }
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, Map<String, String> headers) throws ResponseException {
+    private <T> T makeRequest(String method, String path, Object request, Class<T>
+            responseClass, Map<String, String> headers) throws ResponseException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
