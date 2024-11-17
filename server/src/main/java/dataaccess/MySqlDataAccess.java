@@ -211,18 +211,11 @@ public class MySqlDataAccess implements DataAccess {
                 GameData game = new Gson().fromJson(rs.getString("json"), GameData.class);
 
                 if (playerColor != null) {
-                    if (!playerColor.equals(ChessGame.TeamColor.WHITE)) {
-                        if (!playerColor.equals(ChessGame.TeamColor.BLACK)) {
-                            throw new DataAccessException("Error: bad request");
-                        }
-                    }
                     if (game.isColorTaken(playerColor)) {
                         throw new DataAccessException("Error: already taken");
                     }
                     game.addPlayer(playerColor, username);
-                } //else {
-                    //throw new DataAccessException("Error: bad request");
-                //}
+                }
 
                 updateGame.setString(1, new Gson().toJson(game));
                 updateGame.setInt(2, gameID);
