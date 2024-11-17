@@ -1,14 +1,7 @@
 package ui;
 
-//import client.websocket.NotificationHandler;
-//import webSocketMessages.Notification;
-
 import java.util.Scanner;
 
-import static java.awt.Color.*;
-import static ui.EscapeSequences.*;
-
-//public class Repl implements NotificationHandler {
 public class Repl {
     private final Client client;
 
@@ -37,10 +30,4 @@ public class Repl {
         }
         System.out.println();
     }
-
-//    public void notify(Notification notification) {
-//        System.out.println(RED + notification.message());
-//        printPrompt();
-//    }
-
 }

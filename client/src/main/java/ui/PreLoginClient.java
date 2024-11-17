@@ -12,9 +12,6 @@ public class PreLoginClient implements Client{
 //    private String visitorName = null;
     private final ServerFacade server;
     private final String serverUrl;
-    //    private final NotificationHandler notificationHandler;
-//    private WebSocketFacade ws;
-//    private State state = State.SIGNEDOUT;
 
     public PreLoginClient(String serverUrl) {
         server = new ServerFacade(serverUrl);

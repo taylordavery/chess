@@ -18,9 +18,6 @@ public class PostLoginClient implements Client{
     private final ServerFacade server;
     private final String serverUrl;
     private final AuthData auth;
-    //    private final NotificationHandler notificationHandler;
-//    private WebSocketFacade ws;
-//    private State state = State.SIGNEDOUT;
 
     public PostLoginClient(String serverUrl, AuthData auth) {
         server = new ServerFacade(serverUrl);
