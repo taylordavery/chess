@@ -10,21 +10,14 @@ import java.util.Arrays;
 //import client.websocket.WebSocketFacade;
 
 public class GameplayClient implements Client{
-//    private String visitorName = null;
     private final ServerFacade server;
     private final String serverUrl;
     private final AuthData auth;
-    private final GameData game;
-    //    private final NotificationHandler notificationHandler;
-//    private WebSocketFacade ws;
-//    private State state = State.SIGNEDOUT;
 
     public GameplayClient(String serverUrl, AuthData auth, String gameID) throws ResponseException {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
         this.auth = auth;
-        //        this.notificationHandler = notificationHandler;
-        this.game = null;  // server.getGame(auth.authToken(), Integer.parseInt(gameID));
     }
 
     public String eval(String input) {
@@ -72,8 +65,6 @@ public class GameplayClient implements Client{
     }
 
     public String leave() {
-        assert game != null;
-//        System.out.printf("You left %s.", game.getGameName());
         System.out.print("You left the game.");
         return "%quit%";
     }

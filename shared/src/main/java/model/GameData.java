@@ -17,17 +17,6 @@ public class GameData {
         this.game = game;
     }
 
-//    @Override
-//    public String toString() {
-//        return gameName;
-//    }
-//
-//    public String printBoard(ChessGame.TeamColor color) {
-//        var board = new StringBuilder();
-//        board.append(SET_BG_COLOR_LIGHT_GREY)
-//        return board.toString();
-//    }
-
     public boolean isColorTaken(ChessGame.TeamColor playerColor) throws Exception {
         if (playerColor.equals(ChessGame.TeamColor.BLACK)) {
             return blackUsername != null;
