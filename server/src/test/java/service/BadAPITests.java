@@ -1,5 +1,6 @@
 package service;
 
+import chess.ChessGame;
 import dataaccess.*;
 import model.AuthData;
 import org.junit.jupiter.api.Test;
@@ -60,7 +61,7 @@ public class BadAPITests {
         assertThrows(DataAccessException.class, () -> {
             this.auth = dataAccess.register("username", "password", "email");
             this.gameID = dataAccess.createGame(auth.authToken(), "gameName");
-            dataAccess.joinGame(null, "white", gameID);
+            dataAccess.joinGame(null, ChessGame.TeamColor.WHITE, gameID);
         }, "Expected joinGame() to throw, but it didn't");
     }
 }

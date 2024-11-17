@@ -1,6 +1,8 @@
 
 package ui;
 
+import chess.ChessBoard;
+import chess.ChessGame;
 import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
@@ -33,7 +35,6 @@ public class PostLoginClient implements Client{
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
-                case "clear" -> clear();
                 case "logout" -> logout();
                 case "list" -> listGames();
                 case "create" -> createGame(params);
@@ -48,12 +49,17 @@ public class PostLoginClient implements Client{
 
     private String joinGame(String[] params) throws ResponseException {
         if (params.length > 1) {
-            server.joinGame(auth.authToken(), Integer.parseInt(params[0]), params[1]);
-            return String.format("You joined game %s as %s", params[0], params[1]);
+            var game = new ChessGame().getBoard().toString();
+            server.joinGame(auth.authToken(), params[1], Integer.parseInt(params[0]));
+            System.out.printf("You joined game %s as %s\n", params[0], params[1]);
+            new Repl(new GameplayClient(serverUrl, auth, game)).run(); //I'll need to add a game parameter here or something.
         } else {
-            server.joinGame(auth.authToken(), Integer.parseInt(params[0]), null);
-            return String.format("You joined game %s as Observer", params[0]);
+            var game = new ChessGame().getBoard().toString();
+            server.joinGame(auth.authToken(), null, Integer.parseInt(params[0]));
+            System.out.printf("You joined game %s as Observer\n", params[0]);
+            new Repl(new GameplayClient(serverUrl, auth, game)).run(); //I'll need to add a game parameter here or something.
         }
+        return this.help();
     }
 
     private String createGame(String[] params) throws ResponseException {
@@ -106,40 +112,18 @@ public class PostLoginClient implements Client{
         return " ".repeat(padStart) + text + " ".repeat(padEnd);
     }
 
-
-
-
-
-
     private String logout() throws ResponseException {
         server.logout(auth.authToken());
         System.out.println("You logged out.");
         return "%quit%";
     }
 
-    public String clear() throws ResponseException {
-        server.clear();
-        return "Database has been cleared.";
-    }
-
-    public String register(String... params) throws ResponseException {
-        if (params.length >= 1) {
-//            ws = new WebSocketFacade(serverUrl, notificationHandler);
-//            ws.enterPetShop(visitorName);
-            server.register(params[0], params[1], params[2]);
-            System.out.printf("Account created.\nYou are signed in as %s.", params[0]);
-            new Repl(new PostLoginClient(serverUrl, auth)).run();
-        }
-        throw new ResponseException(400, "Expected: <username> <password> <email>");
-    }
-
     public String help() {
         return """
-                - clear
                 - logout
                 - list
                 - create <gameName>
-                - join <gameID>
+                - join <gameNumber>
                 """;
     }
 

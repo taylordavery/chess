@@ -191,7 +191,7 @@ public class MySqlDataAccess implements DataAccess {
     }
 
     @Override
-    public void joinGame(UUID authToken, String playerColor, int gameID) throws DataAccessException, SQLException {
+    public void joinGame(UUID authToken, ChessGame.TeamColor playerColor, int gameID) throws DataAccessException, SQLException {
         if (notValidSession(authToken)) {
             throw new DataAccessException("Error: unauthorized");
         }
@@ -211,8 +211,8 @@ public class MySqlDataAccess implements DataAccess {
                 GameData game = new Gson().fromJson(rs.getString("json"), GameData.class);
 
                 if (playerColor != null) {
-                    if (!playerColor.equals("white")) {
-                        if (!playerColor.equals("black")) {
+                    if (!playerColor.equals(ChessGame.TeamColor.WHITE)) {
+                        if (!playerColor.equals(ChessGame.TeamColor.BLACK)) {
                             throw new DataAccessException("Error: bad request");
                         }
                     }
@@ -225,6 +225,38 @@ public class MySqlDataAccess implements DataAccess {
                 updateGame.setString(1, new Gson().toJson(game));
                 updateGame.setInt(2, gameID);
                 updateGame.executeUpdate();
+            } catch (Exception e) {
+                throw new DataAccessException(e.getMessage());
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
+        }
+    }
+
+    /**
+     * @param authToken
+     * @param gameID
+     * @return
+     */
+    @Override
+    public GameData getGame(UUID authToken, int gameID) throws SQLException, DataAccessException {
+        if (notValidSession(authToken)) {
+            throw new DataAccessException("Error: unauthorized");
+        }
+
+        String username = getUsernameByAuthToken(authToken);
+
+        try (var conn = DatabaseManager.getConnection();
+             var selectGame = conn.prepareStatement("SELECT json FROM games WHERE gameID = ?");
+             var updateGame = conn.prepareStatement("UPDATE games SET json = ? WHERE gameID = ?")) {
+
+            try (var rs = selectGame.executeQuery()) {
+                if (!rs.next()) {
+                    throw new DataAccessException("Error: game not found");
+                }
+
+                return new Gson().fromJson(rs.getString("json"), GameData.class);
+
             } catch (Exception e) {
                 throw new DataAccessException(e.getMessage());
             }

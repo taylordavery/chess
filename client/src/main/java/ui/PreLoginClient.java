@@ -66,11 +66,10 @@ public class PreLoginClient implements Client{
             var auth = server.login(params[0], params[1]);
             System.out.printf("You signed in as %s.", params[0]);
             new Repl(new PostLoginClient(serverUrl, auth)).run();
-            System.out.println(this.help());
         } else {
         throw new ResponseException(400, "Expected: <username> <password>");
-    }
-        return "";
+        }
+        return this.help();
     }
 
     public String help() {

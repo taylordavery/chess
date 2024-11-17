@@ -71,7 +71,7 @@ public class ServerFacade {
 //        return response.gameId;
     }
 
-    public void  joinGame(UUID authToken, int gameID, String playerColor) throws ResponseException {
+    public void joinGame(UUID authToken, String playerColor, int gameID) throws ResponseException {
         var path = "/game";
         Map<String, Object> userData = new HashMap<>();
         Map<String, String> headers = new HashMap<>();
@@ -140,5 +140,14 @@ public class ServerFacade {
 
     private boolean isSuccessful(int status) {
         return status / 100 == 2;
+    }
+
+    public GameData getGame(UUID authToken, int gameID) throws ResponseException {
+        var path = "/board";
+        Map<String, Object> body = new HashMap<>();
+        Map<String, String> headers = new HashMap<>();
+        headers.put("authorization", authToken.toString());
+        body.put("gameID", gameID);
+        return this.makeRequest("GET", path, body, GameData.class, headers);
     }
 }

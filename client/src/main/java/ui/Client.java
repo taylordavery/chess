@@ -11,13 +11,6 @@ public interface Client {
      */
     String eval(String input);
 
-    /**
-     * Clears the server or session state.
-     *
-     * @return Message indicating the clear operation was successful.
-     * @throws ResponseException if the clear operation fails.
-     */
-    String clear() throws ResponseException;
 
     /**
      * Provides help information for using the client commands.

@@ -1,5 +1,6 @@
 package service;
 
+import chess.ChessGame;
 import dataaccess.*;
 import model.AuthData;
 import org.junit.jupiter.api.Test;
@@ -57,7 +58,7 @@ public class GoodAPITests {
     public void joinGame() throws DataAccessException, SQLException {
         this.auth = dataAccess.register("username", "password", "email");
         this.gameID = dataAccess.createGame(auth.authToken(), "gameName");
-        dataAccess.joinGame(auth.authToken(), "white", gameID);
+        dataAccess.joinGame(auth.authToken(), ChessGame.TeamColor.WHITE, gameID);
         dataAccess.clear();
     }
 }

@@ -17,24 +17,31 @@ public class GameData {
         this.game = game;
     }
 
-    public String toString() {
-        return this.gameName;
-    }
+//    @Override
+//    public String toString() {
+//        return gameName;
+//    }
+//
+//    public String printBoard(ChessGame.TeamColor color) {
+//        var board = new StringBuilder();
+//        board.append(SET_BG_COLOR_LIGHT_GREY)
+//        return board.toString();
+//    }
 
-    public boolean isColorTaken(String playerColor) throws Exception {
-        if (playerColor.equalsIgnoreCase("black")) {
+    public boolean isColorTaken(ChessGame.TeamColor playerColor) throws Exception {
+        if (playerColor.equals(ChessGame.TeamColor.BLACK)) {
             return blackUsername != null;
-        } else if (playerColor.equalsIgnoreCase("white")) {
+        } else if (playerColor.equals(ChessGame.TeamColor.WHITE)) {
             return whiteUsername != null;
         } else {
             throw new Exception("Invalid player color");
         }
     }
 
-    public void addPlayer(String playerColor, String username) {
-        if (playerColor.equalsIgnoreCase("black")) {
+    public void addPlayer(ChessGame.TeamColor playerColor, String username) {
+        if (playerColor.equals(ChessGame.TeamColor.BLACK)) {
             blackUsername = username;
-        } else if (playerColor.equalsIgnoreCase("white")) {
+        } else if (playerColor.equals(ChessGame.TeamColor.WHITE)) {
             whiteUsername = username;
         }
     }

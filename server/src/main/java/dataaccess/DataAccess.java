@@ -1,5 +1,6 @@
 package dataaccess;
 
+import chess.ChessGame;
 import model.*;
 
 import java.sql.SQLException;
@@ -19,5 +20,7 @@ public interface DataAccess {
 
     int createGame(UUID authToken, String gameName) throws DataAccessException, SQLException;
 
-    void  joinGame(UUID authToken, String playerColor, int gameID) throws DataAccessException, SQLException;
+    void  joinGame(UUID authToken, ChessGame.TeamColor playerColor, int gameID) throws DataAccessException, SQLException;
+
+    GameData getGame(UUID authToken, int gameID) throws SQLException, DataAccessException;
 }

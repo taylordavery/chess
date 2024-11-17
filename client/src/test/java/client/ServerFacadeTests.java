@@ -120,14 +120,14 @@ public class ServerFacadeTests {
         assertDoesNotThrow(() -> {
             AuthData auth = serverFacade.register("testUser6", "password", "test6@example.com");
             int gameId = serverFacade.createGame(auth.authToken(), "Test Game 2");
-            serverFacade.joinGame(auth.authToken(), gameId, "white");
+            serverFacade.joinGame(auth.authToken(), "white", gameId);
         });
     }
 
     @Test
     void joinGame_negative() {
         assertThrows(ResponseException.class, () -> {
-            serverFacade.joinGame(UUID.randomUUID(), -1, "invalidColor"); // Invalid inputs
+            serverFacade.joinGame(UUID.randomUUID(), "invalidColor", -1); // Invalid inputs
         });
     }
 }

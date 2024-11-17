@@ -5,6 +5,7 @@ import model.AuthData;
 import model.GameData;
 import model.UserData;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -87,7 +88,7 @@ public class MemoryDataAccess implements DataAccess {
     }
 
     @Override
-    public void joinGame(UUID authToken, String playerColor, int gameID) throws DataAccessException {
+    public void joinGame(UUID authToken, ChessGame.TeamColor playerColor, int gameID) throws DataAccessException {
         if (!activeSessions.containsKey(authToken)) {
             throw new DataAccessException("Error: unauthorized");
         }
@@ -118,5 +119,17 @@ public class MemoryDataAccess implements DataAccess {
 
         // Add the player to the game
         game.addPlayer(playerColor, username);
+    }
+
+    /**
+     * @param authToken
+     * @param gameID
+     * @return
+     * @throws SQLException
+     * @throws DataAccessException
+     */
+    @Override
+    public GameData getGame(UUID authToken, int gameID) throws SQLException, DataAccessException {
+        return null;
     }
 }

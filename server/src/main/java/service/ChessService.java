@@ -1,5 +1,6 @@
 package service;
 
+import chess.ChessGame;
 import dataaccess.DataAccess;
 import dataaccess.DataAccessException;
 import model.*;
@@ -39,7 +40,11 @@ public class ChessService {
         return dataAccess.createGame(authToken, gameName);
     }
 
-    public void  joinGame(UUID authToken, String playerColor, int gameID) throws DataAccessException, SQLException {
+    public void  joinGame(UUID authToken, ChessGame.TeamColor playerColor, int gameID) throws DataAccessException, SQLException {
         dataAccess.joinGame(authToken, playerColor, gameID);
+    }
+
+    public GameData getGame(UUID authToken, int gameID) throws SQLException, DataAccessException {
+        return dataAccess.getGame(authToken, gameID);
     }
 }
