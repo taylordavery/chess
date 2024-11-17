@@ -3,8 +3,7 @@ package ui;
 
 import exception.ResponseException;
 import model.AuthData;
-import model.GameData;
-import ServerFacade.ServerFacade;
+import serverfacadepackage.ServerFacade;
 
 import java.util.Arrays;
 //import client.websocket.WebSocketFacade;
