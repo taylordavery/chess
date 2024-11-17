@@ -1,13 +1,21 @@
-package server;
+package ServerFacadePackage;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
 import exception.ResponseException;
-import model.*;
+import model.AuthData;
+import model.GameData;
 
-import java.util.*;
-import java.io.*;
-import java.net.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class ServerFacade {
 
@@ -51,10 +59,10 @@ public class ServerFacade {
 
     public GameData[] listGames(UUID authToken) throws ResponseException {
         var path = "/game";
-        record listGameDataResponse(GameData[] games) {}
+        record ListGameDataResponse(GameData[] games) {}
         Map<String, String> headers = new HashMap<>();
         headers.put("authorization", authToken.toString());
-        var response = this.makeRequest("GET", path, null, listGameDataResponse.class, headers);
+        var response = this.makeRequest("GET", path, null, ListGameDataResponse.class, headers);
         return response.games;
     }
 

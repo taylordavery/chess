@@ -3,10 +3,9 @@ package ui;
 
 import java.util.Arrays;
 
-import com.google.gson.Gson;
 import exception.ResponseException;
 //import client.websocket.NotificationHandler;
-import serverFacade.ServerFacade;
+import ServerFacadePackage.ServerFacade;
 //import client.websocket.WebSocketFacade;
 
 public class PreLoginClient implements Client{

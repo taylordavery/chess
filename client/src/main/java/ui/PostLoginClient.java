@@ -1,12 +1,11 @@
 
 package ui;
 
-import chess.ChessBoard;
 import chess.ChessGame;
 import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
-import serverFacade.ServerFacade;
+import ServerFacadePackage.ServerFacade;
 
 import java.util.Arrays;
 import java.util.Objects;

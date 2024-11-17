@@ -6,7 +6,7 @@ import model.AuthData;
 import model.GameData;
 import org.junit.jupiter.api.*;
 import server.Server;
-import server.ServerFacade;
+import ServerFacadePackage.ServerFacade;
 
 import java.util.UUID;
 
@@ -34,12 +34,12 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void clear_positive() {
+    void clearPositive() {
         assertDoesNotThrow(() -> serverFacade.clear());
     }
 
     @Test
-    void register_positive() {
+    void registerPositive() {
         assertDoesNotThrow(() -> {
             AuthData auth = serverFacade.register("testUser", "password", "test@example.com");
             assertNotNull(auth);
@@ -47,14 +47,14 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void register_negative() {
+    void registerNegative() {
         assertThrows(ResponseException.class, () -> {
             serverFacade.register("", "password", "invalid-email");
         });
     }
 
     @Test
-    void login_positive() {
+    void loginPositive() {
         assertDoesNotThrow(() -> {
             serverFacade.register("testUser2", "password", "test2@example.com");
             AuthData auth = serverFacade.login("testUser2", "password");
@@ -63,14 +63,14 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void login_negative() {
+    void loginNegative() {
         assertThrows(ResponseException.class, () -> {
             serverFacade.login("nonExistentUser", "wrongPassword");
         });
     }
 
     @Test
-    void logout_positive() {
+    void logoutPositive() {
         assertDoesNotThrow(() -> {
             AuthData auth = serverFacade.register("testUser3", "password", "test3@example.com");
             serverFacade.logout(auth.authToken());
@@ -78,14 +78,14 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void logout_negative() {
+    void logoutNegative() {
         assertThrows(ResponseException.class, () -> {
             serverFacade.logout(UUID.randomUUID()); // Invalid token
         });
     }
 
     @Test
-    void listGames_positive() {
+    void listGamesPositive() {
         assertDoesNotThrow(() -> {
             AuthData auth = serverFacade.register("testUser4", "password", "test4@example.com");
             GameData[] games = serverFacade.listGames(auth.authToken());
@@ -94,14 +94,14 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void listGames_negative() {
+    void listGamesNegative() {
         assertThrows(ResponseException.class, () -> {
             serverFacade.listGames(UUID.randomUUID()); // Invalid token
         });
     }
 
     @Test
-    void createGame_positive() {
+    void createGamePositive() {
         assertDoesNotThrow(() -> {
             AuthData auth = serverFacade.register("testUser5", "password", "test5@example.com");
             serverFacade.createGame(auth.authToken(), "Test Game");
@@ -109,14 +109,14 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void createGame_negative() {
+    void createGameNegative() {
         assertThrows(ResponseException.class, () -> {
             serverFacade.createGame(UUID.randomUUID(), "Invalid Game"); // Invalid token
         });
     }
 
     @Test
-    void joinGame_positive() {
+    void joinGamePositive() {
         assertDoesNotThrow(() -> {
             AuthData auth = serverFacade.register("testUser6", "password", "test6@example.com");
             serverFacade.createGame(auth.authToken(), "Test Game 2");
@@ -125,7 +125,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void joinGame_negative() {
+    void joinGameNegative() {
         assertThrows(ResponseException.class, () -> {
             serverFacade.joinGame(UUID.randomUUID(), null, -1); // Invalid inputs
         });
