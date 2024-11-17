@@ -6,7 +6,7 @@ import java.util.Arrays;
 import com.google.gson.Gson;
 import exception.ResponseException;
 //import client.websocket.NotificationHandler;
-import server.ServerFacade;
+import serverFacade.ServerFacade;
 //import client.websocket.WebSocketFacade;
 
 public class PreLoginClient implements Client{
