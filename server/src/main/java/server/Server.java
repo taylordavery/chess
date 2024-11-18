@@ -62,10 +62,7 @@ public class Server {
         try {
             authToken = new Gson().fromJson(request.headers("authorization"), UUID.class);
         } catch (Exception e) {
-            response.status(401);
-            Map<String, String> jsonResponse = new HashMap<>();
-            jsonResponse.put("message", "Error: unauthorized");
-            return new Gson().toJson(jsonResponse);
+            return throw400(response, 401, "Error: unauthorized");
         }
         JsonObject body = JsonParser.parseString(request.body()).getAsJsonObject();
 
@@ -74,10 +71,7 @@ public class Server {
         if (body.get("gameID") != null) {
             gameID = body.get("gameID").getAsInt();
         } else {
-            response.status(400);
-            Map<String, String> jsonResponse = new HashMap<>();
-            jsonResponse.put("message", "Error: bad request");
-            return new Gson().toJson(jsonResponse);
+            return throw400(response, 400, "Error: bad request");
         }
 
         try {
@@ -91,6 +85,13 @@ public class Server {
         return "";
     }
 
+    private static String throw400(Response response, int statusCode, String value) {
+        response.status(statusCode);
+        Map<String, String> jsonResponse = new HashMap<>();
+        jsonResponse.put("message", value);
+        return new Gson().toJson(jsonResponse);
+    }
+
     private static String errorSwitch(Response response, Exception e) {
         Map<String, Integer> statusCodes = new HashMap<>();
         statusCodes.put("Error: bad request", 400);
@@ -98,13 +99,7 @@ public class Server {
         statusCodes.put("Error: already taken", 403);
 
         int statusCode = statusCodes.getOrDefault(e.getMessage(), 500);
-        response.status(statusCode);
-
-        // Return JSON error message
-        Map<String, String> jsonResponse = new HashMap<>();
-        jsonResponse.put("message", e.getMessage());
-
-        return new Gson().toJson(jsonResponse);
+        return throw400(response, statusCode, e.getMessage());
     }
 
     public void stop() {
@@ -128,19 +123,13 @@ public class Server {
         try {
             userData = new Gson().fromJson(req.body(), UserData.class);
         } catch (Exception e) {
-            res.status(500);
-            Map<String, String> jsonResponse = new HashMap<>();
-            jsonResponse.put("message", "Error");
-            return new Gson().toJson(jsonResponse);
+            return throw400(res, 500, "Error");
         }
 
         if (userData.username() == null || userData.username().isEmpty() ||
                 userData.password() == null || userData.password().isEmpty() ||
                 userData.email() == null || userData.email().isEmpty()) {
-            res.status(400);
-            Map<String, String> jsonResponse = new HashMap<>();
-            jsonResponse.put("message", "Error: missing required field");
-            return new Gson().toJson(jsonResponse);
+            return throw400(res, 400, "Error: missing required field");
         }
 
         AuthData authData;
@@ -261,10 +250,7 @@ public class Server {
         try {
             authToken = new Gson().fromJson(request.headers("authorization"), UUID.class);
         } catch (Exception e) {
-            response.status(401);
-            Map<String, String> jsonResponse = new HashMap<>();
-            jsonResponse.put("message", "Error: unauthorized");
-            return new Gson().toJson(jsonResponse);
+            return throw400(response, 401, "Error: unauthorized");
         }
         JsonObject body = JsonParser.parseString(request.body()).getAsJsonObject();
 
@@ -274,10 +260,7 @@ public class Server {
             String colorString = body.get("playerColor").getAsString(); // Extract the string value
             playerColor = ChessGame.TeamColor.valueOf(colorString.toUpperCase()); // Convert to TeamColor (case-insensitive)
         } else {
-            response.status(400);
-            Map<String, String> jsonResponse = new HashMap<>();
-            jsonResponse.put("message", "Error: bad request");
-            return new Gson().toJson(jsonResponse);
+            return throw400(response, 400, "Error: bad request");
         }
 
 
@@ -285,10 +268,7 @@ public class Server {
         if (body.get("gameID") != null) {
             gameID = body.get("gameID").getAsInt();
         } else {
-            response.status(400);
-            Map<String, String> jsonResponse = new HashMap<>();
-            jsonResponse.put("message", "Error: bad request");
-            return new Gson().toJson(jsonResponse);
+            return throw400(response, 400, "Error: bad request");
         }
 
         ChessGame.TeamColor playerTeamColor = null;
