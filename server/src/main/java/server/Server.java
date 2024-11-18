@@ -84,26 +84,28 @@ public class Server {
         try {
             this.service.joinGame(authToken, null, gameID);
         } catch (Exception e) {
-            // Map exception messages to status codes
-            Map<String, Integer> statusCodes = new HashMap<>();
-            statusCodes.put("Error: bad request", 400);
-//            statusCodes.put("Name is null", 400);
-            statusCodes.put("Error: unauthorized", 401);
-            statusCodes.put("Error: already taken", 403);
-
-            int statusCode = statusCodes.getOrDefault(e.getMessage(), 500);
-            response.status(statusCode);
-
-            // Return JSON error message
-            Map<String, String> jsonResponse = new HashMap<>();
-            jsonResponse.put("message", e.getMessage());
-
-            return new Gson().toJson(jsonResponse);
+            return errorSwitch(response, e);
         }
 
         // Success status
         response.status(200);
         return "";
+    }
+
+    private static String errorSwitch(Response response, Exception e) {
+        Map<String, Integer> statusCodes = new HashMap<>();
+        statusCodes.put("Error: bad request", 400);
+        statusCodes.put("Error: unauthorized", 401);
+        statusCodes.put("Error: already taken", 403);
+
+        int statusCode = statusCodes.getOrDefault(e.getMessage(), 500);
+        response.status(statusCode);
+
+        // Return JSON error message
+        Map<String, String> jsonResponse = new HashMap<>();
+        jsonResponse.put("message", e.getMessage());
+
+        return new Gson().toJson(jsonResponse);
     }
 
     private Object getGame(Request request, Response response) throws DataAccessException {
@@ -133,19 +135,7 @@ public class Server {
             this.service.getGame(authToken, gameID);
         } catch (Exception e) {
             // Map exception messages to status codes
-            Map<String, Integer> statusCodes = new HashMap<>();
-            statusCodes.put("Error: bad request", 400);
-            statusCodes.put("Error: unauthorized", 401);
-            statusCodes.put("Error: already taken", 403);
-
-            int statusCode = statusCodes.getOrDefault(e.getMessage(), 500);
-            response.status(statusCode);
-
-            // Return JSON error message
-            Map<String, String> jsonResponse = new HashMap<>();
-            jsonResponse.put("message", e.getMessage());
-
-            return new Gson().toJson(jsonResponse);
+            return errorSwitch(response, e);
         }
 
         // Success status
@@ -350,20 +340,7 @@ public class Server {
             this.service.joinGame(authToken, playerColor, gameID);
         } catch (Exception e) {
             // Map exception messages to status codes
-            Map<String, Integer> statusCodes = new HashMap<>();
-            statusCodes.put("Error: bad request", 400);
-//            statusCodes.put("Name is null", 400);
-            statusCodes.put("Error: unauthorized", 401);
-            statusCodes.put("Error: already taken", 403);
-
-            int statusCode = statusCodes.getOrDefault(e.getMessage(), 500);
-            response.status(statusCode);
-
-            // Return JSON error message
-            Map<String, String> jsonResponse = new HashMap<>();
-            jsonResponse.put("message", e.getMessage());
-
-            return new Gson().toJson(jsonResponse);
+            return errorSwitch(response, e);
         }
 
         // Success status
