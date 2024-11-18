@@ -279,18 +279,59 @@ public class Server {
     }
 
     private Object joinGame(Request request, Response response) throws DataAccessException {
-        UUID authToken = extractAuthToken(request, response);
+        UUID authToken;
+        try {
+            authToken = new Gson().fromJson(request.headers("authorization"), UUID.class);
+        } catch (Exception e) {
+            response.status(401);
+            Map<String, String> jsonResponse = new HashMap<>();
+            jsonResponse.put("message", "Error: unauthorized");
+            return new Gson().toJson(jsonResponse);
+        }
         JsonObject body = JsonParser.parseString(request.body()).getAsJsonObject();
-        int gameID = extractGameIdFromBody(body, response);
-        ChessGame.TeamColor playerColor = extractPlayerColor(body, response);
+
+        // Check if playerColor is present and not null
+        ChessGame.TeamColor playerColor = null;
+        if (body.has("playerColor") && !body.get("playerColor").isJsonNull()) {
+            String colorString = body.get("playerColor").getAsString(); // Extract the string value
+            playerColor = ChessGame.TeamColor.valueOf(colorString.toUpperCase()); // Convert to TeamColor (case-insensitive)
+        } else {
+            response.status(400);
+            Map<String, String> jsonResponse = new HashMap<>();
+            jsonResponse.put("message", "Error: bad request");
+            return new Gson().toJson(jsonResponse);
+        }
+
+
+        int gameID;
+        if (body.get("gameID") != null) {
+            gameID = body.get("gameID").getAsInt();
+        } else {
+            response.status(400);
+            Map<String, String> jsonResponse = new HashMap<>();
+            jsonResponse.put("message", "Error: bad request");
+            return new Gson().toJson(jsonResponse);
+        }
+
+        ChessGame.TeamColor playerTeamColor = null;
+
+        if (Objects.equals(playerColor, "black")) {
+            playerTeamColor = ChessGame.TeamColor.BLACK;
+        }
+        if (Objects.equals(playerColor, "white")) {
+            playerTeamColor = ChessGame.TeamColor.WHITE;
+        }
 
         try {
             this.service.joinGame(authToken, playerColor, gameID);
         } catch (Exception e) {
+            // Map exception messages to status codes
             return errorSwitch(response, e);
         }
 
+        // Success status
         response.status(200);
         return "";
     }
+
 }
