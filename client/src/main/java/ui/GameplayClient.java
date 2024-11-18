@@ -84,12 +84,22 @@ public class GameplayClient implements Client{
 
             // bottom letters
             formattedBoard.append("   ");
-            for (char col = 'a'; col <= 'h'; col++) {
-                formattedBoard.append(EscapeSequences.SET_BG_COLOR_LIGHT_GREY)
-                        .append(EscapeSequences.SET_TEXT_COLOR_BLACK)
-                        .append(" ").append(col).append(" ")
-                        .append(EscapeSequences.RESET_BG_COLOR)
-                        .append(EscapeSequences.RESET_TEXT_COLOR);
+            if (!isBlack) {
+                for (char col = 'a'; col <= 'h'; col++) {
+                    formattedBoard.append(EscapeSequences.SET_BG_COLOR_LIGHT_GREY)
+                            .append(EscapeSequences.SET_TEXT_COLOR_BLACK)
+                            .append(" ").append(col).append(" ")
+                            .append(EscapeSequences.RESET_BG_COLOR)
+                            .append(EscapeSequences.RESET_TEXT_COLOR);
+                }
+            } else {
+                for (char col = 'h'; col >= 'a'; col--) {
+                    formattedBoard.append(EscapeSequences.SET_BG_COLOR_LIGHT_GREY)
+                            .append(EscapeSequences.SET_TEXT_COLOR_BLACK)
+                            .append(" ").append(col).append(" ")
+                            .append(EscapeSequences.RESET_BG_COLOR)
+                            .append(EscapeSequences.RESET_TEXT_COLOR);
+                }
             }
             formattedBoard.append("\n");
 
