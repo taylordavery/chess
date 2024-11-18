@@ -74,6 +74,7 @@ public class PreLoginClient implements Client{
                 - register <username> <password> <email>
                 - login <username> <password>
                 - quit
+                - help
                 """;
     }
 

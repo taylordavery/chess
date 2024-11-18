@@ -10,6 +10,6 @@ public class Main {
         DataAccess dataAccess = new MySqlDataAccess();
         var server = new Server();
         server.service = new ChessService(dataAccess);
-        server.run(0);
+        server.run(8080);
     }
 }

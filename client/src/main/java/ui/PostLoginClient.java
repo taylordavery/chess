@@ -132,6 +132,7 @@ public class PostLoginClient implements Client{
                 - create <gameName>
                 - join <gameNumber> <white/black>
                 - observe <gameNumber>
+                - help
                 """;
     }
 
