@@ -57,51 +57,28 @@ public class Server {
         return Spark.port();
     }
 
-    private UUID extractAuthToken(Request request, Response response) {
+    private Object observeGame(Request request, Response response) {
+        UUID authToken;
         try {
-            return new Gson().fromJson(request.headers("authorization"), UUID.class);
+            authToken = new Gson().fromJson(request.headers("authorization"), UUID.class);
         } catch (Exception e) {
             response.status(401);
             Map<String, String> jsonResponse = new HashMap<>();
             jsonResponse.put("message", "Error: unauthorized");
-            throw new RuntimeException(new Gson().toJson(jsonResponse));
+            return new Gson().toJson(jsonResponse);
         }
-    }
-
-    private int extractGameIdFromBody(JsonObject body, Response response) {
-        if (body.get("gameID") != null) {
-            return body.get("gameID").getAsInt();
-        } else {
-            response.status(400);
-            Map<String, String> jsonResponse = new HashMap<>();
-            jsonResponse.put("message", "Error: bad request");
-            throw new RuntimeException(new Gson().toJson(jsonResponse));
-        }
-    }
-
-    private ChessGame.TeamColor extractPlayerColor(JsonObject body, Response response) {
-        if (body.has("playerColor") && !body.get("playerColor").isJsonNull()) {
-            try {
-                String colorString = body.get("playerColor").getAsString();
-                return ChessGame.TeamColor.valueOf(colorString.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                response.status(400);
-                Map<String, String> jsonResponse = new HashMap<>();
-                jsonResponse.put("message", "Error: bad request");
-                throw new RuntimeException(new Gson().toJson(jsonResponse));
-            }
-        } else {
-            response.status(400);
-            Map<String, String> jsonResponse = new HashMap<>();
-            jsonResponse.put("message", "Error: bad request");
-            throw new RuntimeException(new Gson().toJson(jsonResponse));
-        }
-    }
-
-    private Object observeGame(Request request, Response response) {
-        UUID authToken = extractAuthToken(request, response);
         JsonObject body = JsonParser.parseString(request.body()).getAsJsonObject();
-        int gameID = extractGameIdFromBody(body, response);
+
+
+        int gameID;
+        if (body.get("gameID") != null) {
+            gameID = body.get("gameID").getAsInt();
+        } else {
+            response.status(400);
+            Map<String, String> jsonResponse = new HashMap<>();
+            jsonResponse.put("message", "Error: bad request");
+            return new Gson().toJson(jsonResponse);
+        }
 
         try {
             this.service.joinGame(authToken, null, gameID);
@@ -109,6 +86,7 @@ public class Server {
             return errorSwitch(response, e);
         }
 
+        // Success status
         response.status(200);
         return "";
     }
