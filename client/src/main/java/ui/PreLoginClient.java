@@ -42,7 +42,7 @@ public class PreLoginClient implements Client{
     }
 
     public String register(String... params) throws ResponseException {
-        if (params.length >= 1) {
+        if (params.length == 3) {
 //            ws = new WebSocketFacade(serverUrl, notificationHandler);
 //            ws.enterPetShop(visitorName);
             var auth = server.register(params[0], params[1], params[2]);
@@ -50,13 +50,13 @@ public class PreLoginClient implements Client{
             new Repl(new PostLoginClient(serverUrl, auth)).run();
             this.help();
         } else {
-        throw new ResponseException(400, "Expected: <username> <password> <email>");
+            throw new ResponseException(400, "Expected: <username> <password> <email>");
         }
         return this.help();
     }
 
     public String login(String... params) throws ResponseException {
-        if (params.length >= 1) {
+        if (params.length == 2) {
 //            ws = new WebSocketFacade(serverUrl, notificationHandler);
 //            ws.enterPetShop(visitorName);
             var auth = server.login(params[0], params[1]);

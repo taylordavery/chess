@@ -263,7 +263,6 @@ public class Server {
             return throw400(response, 400, "Error: bad request");
         }
 
-
         int gameID;
         if (body.get("gameID") != null) {
             gameID = body.get("gameID").getAsInt();

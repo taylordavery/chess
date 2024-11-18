@@ -47,31 +47,38 @@ public class PostLoginClient implements Client{
 
     private String observeGame(String[] params) throws ResponseException {
         if (params.length == 1) {
-            var game = new ChessGame().getBoard().toString();
-            server.observeGame(auth.authToken(), Integer.parseInt(params[0]));
-            System.out.printf("You joined game %s as Observer\n", params[0]);
-            new Repl(new GameplayClient(serverUrl, auth, game)).run(); //I'll need to add a game parameter here or something.
+            if (params[0].matches("\\d+")) {
+                var game = new ChessGame().getBoard().toString();
+                server.observeGame(auth.authToken(), Integer.parseInt(params[0]));
+                System.out.printf("You joined game %s as Observer\n", params[0]);
+                new Repl(new GameplayClient(serverUrl, auth, game)).run(); //I'll need to add a game parameter here or something.
+            }
         }
         return this.help();
     }
 
     private String joinGame(String[] params) throws ResponseException {
-        if (params.length > 1) {
-            var game = new ChessGame().getBoard().toString();
+        if (params.length == 2) {
+            if (params[0].matches("\\d+")) {
+                var game = new ChessGame().getBoard().toString();
 
-            var teamColor = Objects.equals(params[1], "white") ? ChessGame.TeamColor.WHITE :
-                    Objects.equals(params[1], "black") ? ChessGame.TeamColor.BLACK : null;
+                var teamColor = Objects.equals(params[1], "white") ? ChessGame.TeamColor.WHITE :
+                        Objects.equals(params[1], "black") ? ChessGame.TeamColor.BLACK : null;
 
-            server.joinGame(auth.authToken(), teamColor, Integer.parseInt(params[0]));
-            System.out.printf("You joined game %s as %s\n", params[0], params[1]);
-            new Repl(new GameplayClient(serverUrl, auth, game)).run(); //I'll need to add a game parameter here or something.
+                server.joinGame(auth.authToken(), teamColor, Integer.parseInt(params[0]));
+                System.out.printf("You joined game %s as %s\n", params[0], params[1]);
+                new Repl(new GameplayClient(serverUrl, auth, game)).run(); //I'll need to add a game parameter here or something.
+            }
         }
         return this.help();
     }
 
     private String createGame(String[] params) throws ResponseException {
+        if (params.length == 1) {
         server.createGame(auth.authToken(), params[0]);
         return String.format("You created a chess game named %s.", params[0]);
+        }
+        return help();
     }
 
     private String listGames() throws ResponseException {
