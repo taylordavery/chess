@@ -83,7 +83,7 @@ public class GameplayClient implements Client{
             }
 
             // bottom letters
-            formattedBoard.append("   "); // Spacing to align letters with columns
+            formattedBoard.append("   ");
             for (char col = 'a'; col <= 'h'; col++) {
                 formattedBoard.append(EscapeSequences.SET_BG_COLOR_LIGHT_GREY)
                         .append(EscapeSequences.SET_TEXT_COLOR_BLACK)
@@ -124,6 +124,7 @@ public class GameplayClient implements Client{
         var game = new ChessGame().getBoard().toString();
         System.out.println("White:");
         System.out.print(ChessBoardFormatter.formatChessBoard(game, false));
+        System.out.println("\n");
         System.out.println("Black:");
         System.out.print(ChessBoardFormatter.formatChessBoard(game, true));
         return "";

@@ -10,5 +10,4 @@ public class Main {
 
         new Repl(new PreLoginClient(serverUrl)).run();
     }
-
 }
