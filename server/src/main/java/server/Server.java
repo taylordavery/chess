@@ -51,7 +51,6 @@ public class Server {
         Spark.post("/game", this::createGame);
         Spark.put("/game", this::joinGame);
         Spark.put("/observe", this::observeGame);
-        Spark.get("/board", this::getGame);
 
         Spark.init();
         Spark.awaitInitialization();
@@ -106,41 +105,6 @@ public class Server {
         jsonResponse.put("message", e.getMessage());
 
         return new Gson().toJson(jsonResponse);
-    }
-
-    private Object getGame(Request request, Response response) throws DataAccessException {
-        UUID authToken;
-        try {
-            authToken = new Gson().fromJson(request.headers("authorization"), UUID.class);
-        } catch (Exception e) {
-            response.status(401);
-            Map<String, String> jsonResponse = new HashMap<>();
-            jsonResponse.put("message", "Error: unauthorized");
-            return new Gson().toJson(jsonResponse);
-        }
-        JsonObject body = JsonParser.parseString(request.body()).getAsJsonObject();
-
-        // Check if gameID is present and not null
-        int gameID;
-        if (body.get("gameID") != null) {
-            gameID = body.get("gameID").getAsInt();
-        } else {
-            response.status(400);
-            Map<String, String> jsonResponse = new HashMap<>();
-            jsonResponse.put("message", "Error: bad request");
-            return new Gson().toJson(jsonResponse);
-        }
-
-        try {
-            this.service.getGame(authToken, gameID);
-        } catch (Exception e) {
-            // Map exception messages to status codes
-            return errorSwitch(response, e);
-        }
-
-        // Success status
-        response.status(200);
-        return response;
     }
 
     public void stop() {
