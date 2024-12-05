@@ -228,11 +228,6 @@ public class MySqlDataAccess implements DataAccess {
         }
     }
 
-    /**
-     * @param authToken
-     * @param gameID
-     * @return
-     */
     @Override
     public GameData getGame(UUID authToken, int gameID) throws SQLException, DataAccessException {
         if (notValidSession(authToken)) {
@@ -260,7 +255,6 @@ public class MySqlDataAccess implements DataAccess {
         }
     }
 
-// Helper methods
 
     private boolean notValidSession(UUID authToken) throws SQLException, DataAccessException {
         if (authToken == null) {
@@ -371,5 +365,4 @@ public class MySqlDataAccess implements DataAccess {
             throw new DataAccessException(e.getMessage());
         }
     }
-
 }

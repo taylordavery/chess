@@ -44,7 +44,7 @@ public class ChessService {
         dataAccess.joinGame(authToken, playerColor, gameID);
     }
 
-    public GameData getGame(UUID authToken, int gameID) throws SQLException, DataAccessException {
-        return dataAccess.getGame(authToken, gameID);
-    }
+//    public GameData getGame(UUID authToken, int gameID) throws SQLException, DataAccessException {
+//        return dataAccess.getGame(authToken, gameID);
+//    }
 }

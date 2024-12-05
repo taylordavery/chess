@@ -131,7 +131,7 @@ public class ServerFacade {
         var status = http.getResponseCode();
         var msg = http.getResponseMessage();
         if (!isSuccessful(status)) {
-            msg = "Oops, try again.";
+            msg = "Error, try again.";
             throw new ResponseException(status, msg);
         }
     }

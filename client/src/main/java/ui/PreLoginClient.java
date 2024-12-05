@@ -4,9 +4,9 @@ package ui;
 import java.util.Arrays;
 
 import exception.ResponseException;
-//import client.websocket.NotificationHandler;
+import ui.websocket.NotificationHandler;
 import serverfacadepackage.ServerFacade;
-//import client.websocket.WebSocketFacade;
+import ui.websocket.WebSocketFacade;
 
 public class PreLoginClient implements Client{
 //    private String visitorName = null;
