@@ -22,6 +22,7 @@ public class GoodAPITests {
 
     @Test
     public void register() throws DataAccessException, SQLException {
+        this.clear();
         this.auth = dataAccess.register("username", "password", "email");
         dataAccess.clear();
     }
@@ -35,6 +36,7 @@ public class GoodAPITests {
 
     @Test
     public void logout() throws DataAccessException, SQLException {
+        this.clear();
         this.auth = dataAccess.register("username", "password", "email");
         dataAccess.logout(auth.authToken());
         dataAccess.clear();
@@ -42,6 +44,7 @@ public class GoodAPITests {
 
     @Test
     public void listGames() throws DataAccessException, SQLException {
+        this.clear();
         this.auth = dataAccess.register("username", "password", "email");
         dataAccess.listGames(auth.authToken());
         dataAccess.clear();
@@ -56,6 +59,7 @@ public class GoodAPITests {
 
     @Test
     public void joinGame() throws DataAccessException, SQLException {
+        this.clear();
         this.auth = dataAccess.register("username", "password", "email");
         this.gameID = dataAccess.createGame(auth.authToken(), "gameName");
         dataAccess.joinGame(auth.authToken(), ChessGame.TeamColor.WHITE, gameID);

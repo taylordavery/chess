@@ -58,27 +58,41 @@ public class GameplayClient implements Client{
             JsonArray rows = JsonParser.parseString(boardString).getAsJsonArray();
             StringBuilder formattedBoard = new StringBuilder();
 
-            for (int i = 0; i < rows.size(); i++) {
-                int rowIndex = isBlack ? i : rows.size() - 1 - i;
+            for (int i = 0; i < 8; i++) {
+                int rowIndex = isBlack ? i : 7 - i;
                 JsonArray row = rows.get(rowIndex).getAsJsonArray();
 
                 // numbers on left
                 formattedBoard.append(EscapeSequences.SET_BG_COLOR_LIGHT_GREY)
                         .append(EscapeSequences.SET_TEXT_COLOR_BLACK)
                         .append(" ")
-                        .append(8 - i).append(" ")
+                        .append(!isBlack ? 8 - i : 1 + i).append(" ")
                         .append(EscapeSequences.RESET_BG_COLOR)
                         .append(EscapeSequences.RESET_TEXT_COLOR);
 
-                for (int j = 0; j < row.size(); j++) {
-                    boolean isBlackSquare = (i + j) % 2 == 1;
-                    String bgColor = isBlackSquare ? EscapeSequences.SET_BG_COLOR_BLACK : EscapeSequences.SET_BG_COLOR_WHITE;
-                    String piece = row.get(j).isJsonNull() ? "null" : row.get(j).getAsString();
+                // Reverse the columns if isBlack is true
+                if (isBlack) {
+                    for (int j = 7; j >= 0; j--) {
+                        boolean isBlackSquare = (i + (7 - j)) % 2 == 1;
+                        String bgColor = isBlackSquare ? EscapeSequences.SET_BG_COLOR_BLACK : EscapeSequences.SET_BG_COLOR_WHITE;
+                        String piece = row.get(j).isJsonNull() ? "null" : row.get(j).getAsString();
 
-                    formattedBoard.append(bgColor)
-                            .append(pieceMap.getOrDefault(piece, EscapeSequences.EMPTY))
-                            .append(EscapeSequences.RESET_BG_COLOR);
+                        formattedBoard.append(bgColor)
+                                .append(pieceMap.getOrDefault(piece, EscapeSequences.EMPTY))
+                                .append(EscapeSequences.RESET_BG_COLOR);
+                    }
+                } else {
+                    for (int j = 0; j < row.size(); j++) {
+                        boolean isBlackSquare = (i + j) % 2 == 1;
+                        String bgColor = isBlackSquare ? EscapeSequences.SET_BG_COLOR_BLACK : EscapeSequences.SET_BG_COLOR_WHITE;
+                        String piece = row.get(j).isJsonNull() ? "null" : row.get(j).getAsString();
+
+                        formattedBoard.append(bgColor)
+                                .append(pieceMap.getOrDefault(piece, EscapeSequences.EMPTY))
+                                .append(EscapeSequences.RESET_BG_COLOR);
+                    }
                 }
+
                 formattedBoard.append("\n");
             }
 
